@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { Criteria, Examinable, SymptomWithEmbedding } from "../src/types";
 import { logger } from "../src/logging";
-import { titanEmbeddings } from "../src/models";
+import { cohereEmbeddings } from "../src/models";
 import { embed } from "ai";
 import {
   db,
@@ -38,8 +38,9 @@ async function seedData() {
       },
     ].map(async (symptom) => {
       const { embedding } = await embed({
-        model: titanEmbeddings,
+        model: cohereEmbeddings,
         value: `${symptom.name}: ${symptom.description}`,
+
       });
 
       const [insertedSymptom] = await db
@@ -67,7 +68,7 @@ async function seedData() {
       };
 
       const { embedding } = await embed({
-        model: titanEmbeddings,
+        model: cohereEmbeddings,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -106,7 +107,7 @@ async function seedData() {
       const examinable = EXAMINABLES[i];
 
       const { embedding } = await embed({
-        model: titanEmbeddings,
+        model: cohereEmbeddings,
         value: `${criteriaData.name}: ${criteriaData.criteria}`,
       });
 
