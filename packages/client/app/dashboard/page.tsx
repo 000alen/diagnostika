@@ -15,10 +15,10 @@ import avatar from "../../assets/avatar.png";
 import layout from "./page.module.scss";
 
 const tabs = [
-  { name: "Overview", content: <OverviewTab /> },
-  { name: "Patients", content: <PatientsTab /> },
-  { name: "Diagnostics", content: <DiagnosticsTab /> },
-  { name: "Settings", content: <SettingsTab/> }
+  { name: "Vista general", content: <OverviewTab /> },
+  { name: "Diagnósticos", content: <PatientsTab /> },
+  { name: "Pacientes", content: <DiagnosticsTab /> },
+  { name: "Mi configuración", content: <SettingsTab/> }
 ];
 
 const ReviewerDashboard = () => {

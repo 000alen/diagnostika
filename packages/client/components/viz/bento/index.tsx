@@ -4,6 +4,7 @@ import { FileTextIcon, Search, MoveUpRight } from "lucide-react";
 import { BentoCard, BentoGrid } from "@client/components/ui/bento";
 import { Marquee } from "@client/components/ui/marquee";
 import { cn } from "@client/lib/utils";
+import layout from "./index.module.scss";
 
 /** Bento Grid ~ Dummy data  */
 const files = [
@@ -105,21 +106,21 @@ const features = [
 export const BentoGridSide = () => {
   return (
     <>
-      <div>
-        <div className="m-2 bg-white rounded-full p-4 flex items-center" style={{ flex: 3}}>
-          <p className="text-xl font-bold p-2 mr-4">Diagnósticos</p>
-          <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full w-full">
+      <div className={layout.wrapper}>
+        <div>
+          <p>Diagnósticos</p>
+          <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full">
             <Search className="ml-2"/>
             <input
-              className="bg-slate-100 w-full px-4 py-2 rounded-lg text-gray-600 focus:outline-none"
+              className="bg-slate-100 w-full px-1 py-2 rounded-lg text-gray-600 focus:outline-none"
               type="text"
               name="search-diagnostics"
               placeholder="Buscar ..."
             />
           </div>
         </div>
-        <Button style={{flex: 1, backgroundColor: "rgb(0, 98, 241"}} className="text-white rounded-full p-8 font-bold w-35">
-          Consultation
+        <Button>
+          Mis pacientes
           <MoveUpRight/>
         </Button>
       </div>
