@@ -1,5 +1,4 @@
 {
-  "conventionalCommits.scopes": [
-    "client"
-  ]
+  "cSpell.words": ["examinables"],
+  "conventionalCommits.scopes": ["client"]
 }
