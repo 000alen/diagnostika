@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { logger } from "./logging";
 
 import { embed, generateObject, cosineSimilarity } from "ai";
 import { z } from "zod";
@@ -17,9 +18,16 @@ import { flatten } from "./utils";
 import { gpt4o, openaiEmbeddings } from "./models";
 import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 
+// Add threshold constants
+const SIMILARITY_THRESHOLDS = {
+  RELATED_SYMPTOMS: 0.5,  // Used in getRelatedSymptomsFromExaminable
+} as const;
+
 async function extractSymptomsFromDescription(
   description: string
 ): Promise<Array<SymptomWithEmbedding>> {
+  logger.debug('Extracting symptoms from description', { description });
+
   const { object } = await generateObject({
     model: gpt4o,
     schema: z.object({
@@ -38,6 +46,10 @@ async function extractSymptomsFromDescription(
     ],
   });
 
+  logger.debug('Extracted symptoms, adding embeddings', {
+    symptomCount: object.symptoms.length
+  });
+
   const withEmbeddings = await Promise.all(
     object.symptoms.map(async (symptom) => {
       const { embedding } = await embed({
@@ -52,6 +64,9 @@ async function extractSymptomsFromDescription(
     })
   );
 
+  logger.debug('Completed symptom extraction with embeddings', {
+    symptomCount: withEmbeddings.length
+  });
   return withEmbeddings;
 }
 
@@ -66,6 +81,8 @@ async function extractSymptomsFromDescriptions(descriptions: string[]) {
 async function extractExaminablesFromExam(
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
+  logger.debug('Extracting examinables from exam', { exam });
+
   const { object } = await generateObject({
     model: gpt4o,
     schema: z.object({
@@ -84,6 +101,10 @@ async function extractExaminablesFromExam(
     ],
   });
 
+  logger.debug('Extracted examinables, adding embeddings', {
+    examinableCount: object.examinables.length
+  });
+
   const withEmbeddings = await Promise.all(
     object.examinables.map(async (examinable) => {
       const { embedding } = await embed({
@@ -98,24 +119,42 @@ async function extractExaminablesFromExam(
     })
   );
 
+  logger.debug('Completed examinable extraction with embeddings', {
+    examinableCount: withEmbeddings.length
+  });
   return withEmbeddings;
 }
 
 async function getRelatedSymptomsFromExaminable(
   examinable: ExaminableWithEmbedding
 ): Promise<Array<SymptomWithEmbedding>> {
-  await ready;
+  logger.debug('Finding related symptoms for examinable', {
+    examinableName: examinable.name
+  });
 
-  const THRESHOLD = 0.8;
+  await ready;
 
   const similarities = EXAMINABLES.map((e) =>
     cosineSimilarity(examinable.embedding, e.embedding)
   );
 
+  const maxSimilarity = Math.max(...similarities);
+  const maxIndex = similarities.indexOf(maxSimilarity);
+  logger.debug('Similarity scores', {
+    examinableName: examinable.name,
+    highestSimilarity: maxSimilarity,
+    highestMatch: EXAMINABLES[maxIndex].name,
+    threshold: SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS
+  });
+
   const relatedSymptoms = EXAMINABLES.filter(
-    (_, i) => similarities[i] > THRESHOLD
+    (_, i) => similarities[i] > SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS
   ).map((examinable) => SYMPTOMS.find((s) => s.name === examinable.symptom)!);
 
+  logger.debug('Found related symptoms', {
+    examinableName: examinable.name,
+    relatedSymptomCount: relatedSymptoms.length
+  });
   return relatedSymptoms;
 }
 
@@ -162,6 +201,13 @@ async function getSymptomExaminableCriterion(
     }
   }
 
+  logger.debug('Found closest examinable match', {
+    symptomName: symptom.name,
+    examinableName: examinable.name,
+    closestMatch: closestExaminable.name,
+    similarity: closestSimilarity
+  });
+
   const criterion = CRITERION.find(
     (c) => c.examinable === closestExaminable.name && c.symptom === symptom.name
   )!;
@@ -175,6 +221,11 @@ async function evaluateSymptomExaminableCriterion(
   examinable: Examinable,
   criterion: Criteria
 ): Promise<Evaluation> {
+  logger.debug('Evaluating criterion', {
+    symptomName: symptom.name,
+    examinableName: examinable.name
+  });
+
   const result = await generateObject({
     model: gpt4o,
     schema: Evaluation,
@@ -191,6 +242,11 @@ async function evaluateSymptomExaminableCriterion(
     ],
   });
 
+  logger.debug('Completed criterion evaluation', {
+    symptomName: symptom.name,
+    examinableName: examinable.name,
+    result: result.object.positive
+  });
   return result.object;
 }
 
@@ -200,7 +256,14 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
     evaluation: Evaluation;
   }>
 > {
+  logger.debug('Processing exam for symptoms', {
+    examTimestamp: exam.t
+  });
+
   const symptomsAndExaminable = await getCandidateSymptomsFromExam(exam);
+  logger.debug('Found candidate symptoms and examinables', {
+    candidateCount: symptomsAndExaminable.length
+  });
 
   const unresolvedTriplets: Array<{
     symptom: SymptomWithEmbedding;
@@ -233,6 +296,10 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
     )
   );
 
+  logger.debug('Completed exam symptom extraction', {
+    symptomCount: triplets.length,
+    positiveEvaluations: evaluations.filter(e => e.positive).length
+  });
   return triplets.map(({ symptom }, i) => ({
     symptom,
     evaluation: evaluations[i],
@@ -254,10 +321,20 @@ async function extractSymptomsFromExams(
 }
 
 async function buildGraph(snapshots: Array<Snapshot>) {
+  logger.info('Building graph from snapshots', {
+    snapshotCount: snapshots.length
+  });
+
   snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
 
   // Phase 1
   for (const snapshot of snapshots) {
+    logger.debug('Processing snapshot', {
+      timestamp: snapshot.t,
+      descriptionCount: snapshot.descriptions.length,
+      examCount: snapshot.exams.length
+    });
+
     const describedSymptoms = await extractSymptomsFromDescriptions(
       snapshot.descriptions
     );
@@ -266,15 +343,23 @@ async function buildGraph(snapshots: Array<Snapshot>) {
 
     const symptoms = [...describedSymptoms, ...detectedSymptoms];
 
-    console.log(symptoms);
+    logger.info('Processed snapshot symptoms', {
+      describedSymptomCount: describedSymptoms.length,
+      detectedSymptomCount: detectedSymptoms.length,
+      totalSymptomCount: symptoms.length
+    });
   }
 }
 
 async function main() {
+  logger.info('Starting symptom analysis');
+
   const snapshots: Array<Snapshot> = [
     {
       t: new Date(),
-      descriptions: [],
+      descriptions: [
+        "I have a runny nose"
+      ],
       exams: [
         {
           t: new Date(),
@@ -284,9 +369,20 @@ async function main() {
     },
   ];
 
-  const graph = await buildGraph(snapshots);
-
-  console.log(graph);
+  try {
+    const graph = await buildGraph(snapshots);
+    logger.info('Successfully built symptom graph');
+  } catch (error) {
+    logger.error('Failed to build symptom graph', {
+      error: error instanceof Error ? error.message : String(error)
+    });
+    throw error;
+  }
 }
 
-main().catch(console.error);
+main().catch(error => {
+  logger.error('Application failed', {
+    error: error instanceof Error ? error.message : String(error)
+  });
+  process.exit(1);
+});
