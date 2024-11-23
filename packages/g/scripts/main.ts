@@ -13,6 +13,7 @@ async function main() {
       exams: [
         {
           t: new Date(),
+          name: "runny nose",
           description: "the patient has a high level of mucous",
         },
       ],
@@ -20,15 +21,17 @@ async function main() {
   ];
 
   try {
-    const graph = await buildGraph(
+    const { graph, symptoms } = await buildGraph(
       {
-        model: sonnet,
-        embeddings: titanEmbeddings,
+        language: sonnet,
+        embedding: titanEmbeddings,
       },
       snapshots
     );
 
     logger.info("Symptom graph", { graph });
+
+    logger.info("Symptoms", { symptoms });
 
     logger.info("Successfully built symptom graph");
   } catch (error) {
