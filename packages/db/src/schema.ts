@@ -15,7 +15,7 @@ export const diseases = pgTable(
   "diseases",
   {
     id: serial("id").primaryKey(),
-    name: text("name").notNull().unique(),
+    name: text("name").notNull(),
     description: text("description").notNull(),
     embedding: vector("embedding", { dimensions: 1024 }),
     createdAt: timestamp("created_at").defaultNow(),
@@ -33,7 +33,7 @@ export const symptoms = pgTable(
   "symptoms",
   {
     id: serial("id").primaryKey(),
-    name: text("name").notNull().unique(),
+    name: text("name").notNull(),
     description: text("description").notNull(),
     embedding: vector("embedding", { dimensions: 1024 }),
     createdAt: timestamp("created_at").defaultNow(),
@@ -51,7 +51,7 @@ export const examinables = pgTable(
   "examinables",
   {
     id: serial("id").primaryKey(),
-    name: text("name").notNull().unique(),
+    name: text("name").notNull(),
     description: text("description").notNull(),
     embedding: vector("embedding", { dimensions: 1024 }),
     createdAt: timestamp("created_at").defaultNow(),
@@ -69,7 +69,7 @@ export const criteria = pgTable(
   "criteria",
   {
     id: serial("id").primaryKey(),
-    name: text("name").notNull().unique(),
+    name: text("name").notNull(),
     description: text("description").notNull(),
     embedding: vector("embedding", { dimensions: 1024 }),
     createdAt: timestamp("created_at").defaultNow(),

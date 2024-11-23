@@ -1,8 +1,9 @@
 import "dotenv/config";
+import { readFile } from "fs/promises";
 
 import { Criteria, Examinable, SymptomWithEmbedding } from "../src/types";
 import { logger } from "../src/logging";
-import { cohereEmbeddings } from "../src/models";
+import { titanEmbeddings } from "../src/models";
 import { embed } from "ai";
 import {
   db,
@@ -11,6 +12,8 @@ import {
   criteria,
   symptomExaminables,
   examinableCriteria,
+  diseases,
+  diseaseSymptoms,
 } from "@bananus/db";
 
 type SymptomWithId = {
@@ -29,6 +32,90 @@ async function seedData() {
   await db.delete(criteria);
   await db.delete(examinables);
   await db.delete(symptoms);
+  await db.delete(diseases);
+  await db.delete(diseaseSymptoms);
+
+  // Load parsed data from JSON file
+  const parsedData = JSON.parse(
+    await readFile("./scripts/parsed.json", "utf-8")
+  ) as {
+    name: string;
+    description: string;
+    symptoms: {
+      name: string;
+      description;
+    }[];
+  }[];
+
+  logger.info("Seeding diseases...");
+
+  // Insert diseases and their symptoms into the database
+  const insertedDiseases = await Promise.all(
+    parsedData.map(async (disease) => {
+      const { name, description } = disease;
+
+      const { embedding: diseaseEmbedding } = await embed({
+        model: titanEmbeddings,
+        value: `${name}: ${description}`,
+      });
+
+      const [insertedDisease] = await db
+        .insert(diseases)
+        .values({
+          name,
+          description,
+          embedding: diseaseEmbedding, // Assuming you want to set this later
+        })
+        .returning();
+
+      return insertedDisease;
+    })
+  );
+
+  // Insert symptoms and create relationships
+  const insertedDiseaseAndSymptoms = await Promise.all(
+    parsedData
+      .flatMap((f, i) =>
+        f.symptoms.map((s) => ({
+          symptom: s,
+          insertedDisease: insertedDiseases[i],
+        }))
+      )
+      .map(async ({ symptom, insertedDisease }) => {
+        const { name: symptomName, description: symptomDescription } = symptom;
+
+        const { embedding: symptomEmbedding } = await embed({
+          model: titanEmbeddings,
+          value: `${symptomName}: ${symptomDescription}`,
+        });
+
+        const [insertedSymptom] = await db
+          .insert(symptoms)
+          .values({
+            name: symptomName,
+            description: symptomDescription,
+            embedding: symptomEmbedding, // Assuming you want to set this later
+          })
+          .returning();
+
+        return {
+          insertedSymptom,
+          insertedDisease,
+        };
+      })
+  );
+
+  // Create relationships between diseases and symptoms
+  await Promise.all(
+    insertedDiseaseAndSymptoms.map(
+      async ({ insertedSymptom, insertedDisease }) => {
+        await db.insert(diseaseSymptoms).values({
+          diseaseId: insertedDisease.id,
+          symptomId: insertedSymptom.id,
+        });
+      }
+    )
+  );
 
   const SYMPTOMS: SymptomWithId[] = await Promise.all(
     [
@@ -38,9 +125,8 @@ async function seedData() {
       },
     ].map(async (symptom) => {
       const { embedding } = await embed({
-        model: cohereEmbeddings,
+        model: titanEmbeddings,
         value: `${symptom.name}: ${symptom.description}`,
-
       });
 
       const [insertedSymptom] = await db
@@ -68,7 +154,7 @@ async function seedData() {
       };
 
       const { embedding } = await embed({
-        model: cohereEmbeddings,
+        model: titanEmbeddings,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -107,7 +193,7 @@ async function seedData() {
       const examinable = EXAMINABLES[i];
 
       const { embedding } = await embed({
-        model: cohereEmbeddings,
+        model: titanEmbeddings,
         value: `${criteriaData.name}: ${criteriaData.criteria}`,
       });
 
@@ -147,7 +233,7 @@ async function main() {
   } catch (error) {
     // logger.error("Error during seeding:", error);
     // throw error;
-    console.error(error)
+    console.error(error);
   }
 }
 
