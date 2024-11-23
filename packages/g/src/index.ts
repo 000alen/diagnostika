@@ -1,18 +1,13 @@
 import "dotenv/config";
 import { logger } from "./logging";
 
-import {
-  embed,
-  generateObject,
-  cosineSimilarity,
-  LanguageModel,
-  EmbeddingModel,
-} from "ai";
+import { embed, generateObject, cosineSimilarity } from "ai";
 import { z } from "zod";
 import {
   Criteria,
   CriteriaWithEmbedding,
   Evaluation,
+  EvaluationWithEmbedding,
   Exam,
   Examinable,
   ExaminableWithEmbedding,
@@ -39,15 +34,12 @@ import {
   sql,
   eq,
 } from "@bananus/db";
+import { Graph } from "./graph";
+import { Models } from "./models";
 
 export * from "./models";
 export * from "./utils";
 export * from "./types";
-
-interface Models {
-  model: LanguageModel;
-  embeddings: EmbeddingModel<string>;
-}
 
 // Add threshold constants
 const SIMILARITY_THRESHOLDS = {
@@ -55,13 +47,13 @@ const SIMILARITY_THRESHOLDS = {
 } as const;
 
 export async function extractSymptomsFromDescription(
-  { model, embeddings }: Models,
+  models: Models,
   description: string
 ): Promise<Array<SymptomWithEmbedding>> {
   logger.debug("Extracting symptoms from description", { description });
 
   const { object } = await generateObject({
-    model,
+    model: models.language,
     schema: z.object({
       symptoms: Symptom.array(),
     }),
@@ -84,7 +76,7 @@ export async function extractSymptomsFromDescription(
   const withEmbeddings = await Promise.all(
     object.symptoms.map(async (symptom) => {
       const { embedding } = await embed({
-        model: embeddings,
+        model: models.embedding,
         value: `${symptom.name}: ${symptom.description}`,
       });
 
@@ -98,28 +90,41 @@ export async function extractSymptomsFromDescription(
   logger.debug("Completed symptom extraction with embeddings", {
     symptomCount: withEmbeddings.length,
   });
+
   return withEmbeddings;
 }
 
 export async function extractSymptomsFromDescriptions(
   models: Models,
+  graph: Graph,
   descriptions: string[]
 ) {
   const nSymptoms = await Promise.all(
     descriptions.map((d) => extractSymptomsFromDescription(models, d))
   );
 
-  return flatten(nSymptoms);
+  const symptoms = flatten(nSymptoms);
+
+  for (const symptom of symptoms)
+    graph.addNode({
+      id: symptom.name,
+      type: "Symptom",
+      embedding: symptom.embedding,
+      symptom,
+    });
+
+  return symptoms;
 }
 
 export async function extractExaminablesFromExam(
-  { model, embeddings }: Models,
+  models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
   logger.debug("Extracting examinables from exam", { exam });
 
   const { object } = await generateObject({
-    model,
+    model: models.language,
     schema: z.object({
       examinables: Examinable.array(),
     }),
@@ -142,7 +147,7 @@ export async function extractExaminablesFromExam(
   const withEmbeddings = await Promise.all(
     object.examinables.map(async (examinable) => {
       const { embedding } = await embed({
-        model: embeddings,
+        model: models.embedding,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -198,6 +203,7 @@ export async function getRelatedSymptomsFromExaminable(
 
 export async function getCandidateSymptomsFromExam(
   models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<
   Array<{
@@ -205,7 +211,7 @@ export async function getCandidateSymptomsFromExam(
     examinable: ExaminableWithEmbedding;
   }>
 > {
-  const examinables = await extractExaminablesFromExam(models, exam);
+  const examinables = await extractExaminablesFromExam(models, graph, exam);
 
   const nSymptoms = await Promise.all(
     examinables.map(getRelatedSymptomsFromExaminable)
@@ -282,19 +288,19 @@ export async function getSymptomExaminableCriterion(
 }
 
 export async function evaluateSymptomExaminableCriterion(
-  { model }: Models,
+  models: Models,
   exam: Exam,
   symptom: Symptom,
   examinable: Examinable,
   criterion: Criteria
-): Promise<Evaluation> {
+): Promise<EvaluationWithEmbedding> {
   logger.debug("Evaluating criterion", {
     symptomName: symptom.name,
     examinableName: examinable.name,
   });
 
   const result = await generateObject({
-    model,
+    model: models.language,
     schema: Evaluation,
     messages: [
       {
@@ -313,16 +319,30 @@ export async function evaluateSymptomExaminableCriterion(
     examinableName: examinable.name,
     result: result.object.positive,
   });
-  return result.object;
+
+  const withEmbedding: EvaluationWithEmbedding = {
+    ...result.object,
+    embedding: await embed({
+      model: models.embedding,
+      value: `${symptom.name} (${
+        result.object.positive ? "positive" : "negative"
+      }, with confidence ${result.object.confidence}): ${examinable.name}: ${
+        criterion.name
+      }: ${result.object.explanation}`,
+    }).then(({ embedding }) => embedding),
+  };
+
+  return withEmbedding;
 }
 
 export async function extractSymptomsFromExam(
   models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<
   Array<{
-    symptom: Symptom;
-    evaluation: Evaluation;
+    symptom: SymptomWithEmbedding;
+    evaluation: EvaluationWithEmbedding;
   }>
 > {
   logger.debug("Processing exam for symptoms", {
@@ -331,6 +351,7 @@ export async function extractSymptomsFromExam(
 
   const symptomsAndExaminable = await getCandidateSymptomsFromExam(
     models,
+    graph,
     exam
   );
   logger.debug("Found candidate symptoms and examinables", {
@@ -378,6 +399,7 @@ export async function extractSymptomsFromExam(
     symptomCount: triplets.length,
     positiveEvaluations: evaluations.filter((e) => e.positive).length,
   });
+
   return triplets.map(({ symptom }, i) => ({
     symptom,
     evaluation: evaluations[i],
@@ -386,24 +408,73 @@ export async function extractSymptomsFromExam(
 
 export async function extractSymptomsFromExams(
   models: Models,
+  graph: Graph,
   exams: Array<Exam>
 ): Promise<
   Array<{
+    exam: Exam;
     symptom: Symptom;
     evaluation: Evaluation;
   }>
 > {
-  const symptomsAndEvaluations = await Promise.all(
-    exams.map((e) => extractSymptomsFromExam(models, e))
-  );
-
-  return flatten(
-    symptomsAndEvaluations.map((x) =>
-      x
-        .filter((y) => y.evaluation.positive)
-        .map((y) => ({ symptom: y.symptom, evaluation: y.evaluation }))
+  const examEmbeddings = await Promise.all(
+    exams.map((exam) =>
+      embed({
+        model: models.embedding,
+        value: `${exam.name}: ${exam.description}`,
+      }).then(({ embedding }) => embedding)
     )
   );
+
+  const nSymptomsAndEvaluations = await Promise.all(
+    exams.map((exam) => extractSymptomsFromExam(models, graph, exam))
+  );
+
+  const triplets = flatten(
+    nSymptomsAndEvaluations.map((nSymptomAndEvaluation, i) =>
+      nSymptomAndEvaluation
+        .filter(({ evaluation }) => evaluation.positive)
+        .map(({ symptom, evaluation }) => ({
+          exam: exams[i],
+          symptom,
+          evaluation,
+        }))
+    )
+  );
+
+  for (let i = 0; i < triplets.length; i++) {
+    const { exam, symptom, evaluation } = triplets[i];
+
+    graph.addNode({
+      id: exam.name,
+      type: "Exam",
+      embedding: examEmbeddings[i],
+      exam,
+    });
+
+    graph.addNode({
+      id: symptom.name,
+      type: "Symptom",
+      embedding: symptom.embedding,
+      symptom,
+    });
+
+    graph.addEdge({
+      id: `${exam.name}-${symptom.name}`,
+      type: "Evaluation",
+
+      source: exam.name,
+      sourceEmbedding: examEmbeddings[i],
+
+      target: symptom.name,
+      targetEmbedding: symptom.embedding,
+
+      embedding: evaluation.embedding,
+      evaluation,
+    });
+  }
+
+  return triplets;
 }
 
 export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
@@ -412,6 +483,8 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   });
 
   snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
+
+  const graph = new Graph();
 
   // Phase 1
   for (const snapshot of snapshots) {
@@ -423,11 +496,13 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
 
     const describedSymptoms = await extractSymptomsFromDescriptions(
       models,
+      graph,
       snapshot.descriptions
     );
 
     const detectedSymptoms = await extractSymptomsFromExams(
       models,
+      graph,
       snapshot.exams
     );
 
@@ -442,6 +517,11 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       totalSymptomCount: symptoms.length,
     });
   }
+
+  return {
+    graph,
+    symptoms,
+  };
 }
 
 export function* rankCandidates(

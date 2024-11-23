@@ -12,6 +12,7 @@ export const Embeddable = z.object({
 export const Exam = z
   .object({
     t: z.date().describe("The date and time the exam was taken"),
+    name: z.string().describe("The name of the exam"),
     description: z.string().describe("A detailed description of the exam"),
   })
   .describe("An exam taken by a patient");
@@ -84,6 +85,10 @@ export const Evaluation = z.object({
 });
 
 export type Evaluation = z.infer<typeof Evaluation>;
+
+export const EvaluationWithEmbedding = Evaluation.merge(Embeddable);
+
+export type EvaluationWithEmbedding = z.infer<typeof EvaluationWithEmbedding>;
 
 export const NodeType = z.enum(["Symptom", "Exam"]);
 

@@ -13,9 +13,9 @@ export class Graph {
   }
 
   hasNode(node: Node): boolean {
-    const similarities = this.nodes.map((n) =>
-      cosineSimilarity(node.embedding, n.embedding)
-    );
+    const similarities = this.nodes
+      .filter((n) => n.type === node.type)
+      .map((n) => cosineSimilarity(node.embedding, n.embedding));
 
     if (similarities.some((similarity) => similarity > IDENTITY_THRESHOLD))
       return true;
@@ -24,9 +24,9 @@ export class Graph {
   }
 
   getClosestNode(node: Node): Node | null {
-    const similarities = this.nodes.map((n) =>
-      cosineSimilarity(node.embedding, n.embedding)
-    );
+    const similarities = this.nodes
+      .filter((n) => n.type === node.type)
+      .map((n) => cosineSimilarity(node.embedding, n.embedding));
 
     const maxSimilarity = Math.max(...similarities);
     if (maxSimilarity > IDENTITY_THRESHOLD) {
@@ -52,9 +52,9 @@ export class Graph {
   }
 
   hasEdge(edge: Edge): boolean {
-    const similarities = this.edges.map((e) =>
-      cosineSimilarity(edge.embedding, e.embedding)
-    );
+    const similarities = this.edges
+      .filter((e) => e.type === edge.type)
+      .map((e) => cosineSimilarity(edge.embedding, e.embedding));
 
     const candidateEdges = this.edges.filter(
       (_, i) => similarities[i] > IDENTITY_THRESHOLD
@@ -81,9 +81,9 @@ export class Graph {
   }
 
   getClosestEdge(edge: Edge): Edge | null {
-    const similarities = this.edges.map((e) =>
-      cosineSimilarity(edge.embedding, e.embedding)
-    );
+    const similarities = this.edges
+      .filter((e) => e.type === edge.type)
+      .map((e) => cosineSimilarity(edge.embedding, e.embedding));
 
     let candidateEdges = this.edges.filter(
       (_, i) => similarities[i] > IDENTITY_THRESHOLD

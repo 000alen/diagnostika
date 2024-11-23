@@ -1,5 +1,10 @@
 import { bedrock } from "@ai-sdk/amazon-bedrock";
-import { EmbeddingModel } from "ai";
+import { EmbeddingModel, LanguageModel } from "ai";
+
+export interface Models {
+  language: LanguageModel;
+  embedding: EmbeddingModel<string>;
+}
 
 // export const gpt4o = openai("gpt-4o");
 
