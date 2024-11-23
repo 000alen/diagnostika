@@ -1,5 +1,6 @@
-"use client"
 
+"use client"
+//
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -7,16 +8,18 @@ import * as z from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from 'lucide-react';
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { Button } from "@nextui-org/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@client/app/components/ui/calendar";
+
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@client/app/components/ui/card"
+
 import {
   Form,
   FormControl,
@@ -25,14 +28,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@client/app/components/ui/form"
+
+import { Input } from "@client/app/components/ui/input"
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { toast } from "@/components/ui/use-toast"
+} from "@client/app/components/ui/popover"
+import { toast } from "@client/app/hooks/use-toast"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -53,9 +58,9 @@ export default function SettingsTab() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      email: "",
-    },
-  })
+      email: ""
+    }
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
@@ -107,7 +112,7 @@ export default function SettingsTab() {
                     <Input placeholder="Enter your email" {...field} />
                   </FormControl>
                   <FormDescription>
-                    We'll never share your email with anyone else.
+                    We will never share your email with anyone else.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -123,7 +128,6 @@ export default function SettingsTab() {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={"outline"}
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
@@ -167,4 +171,3 @@ export default function SettingsTab() {
     </Card>
   )
 }
-

@@ -17,6 +17,7 @@
     justify-content: space-between;
     padding: 2rem 1.5rem;
     box-sizing: border-box;
+    // border: 1px solid red;
 
     div {
       &:first-child {
@@ -34,8 +35,8 @@
           border-radius: 50%;
           height: 100%;
           margin-left: .75rem;
-
-          border: 2px solid red;
+          border: 2px solid #0062F1;
+          padding: 2px;
 
           &:hover {
             cursor: pointer;
@@ -48,7 +49,7 @@
 
 .tabs {
   position: absolute;
-  top: 2rem;
+  top: .75rem;
   left: 50%;
   transform: translateX(-50%);
 
