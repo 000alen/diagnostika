@@ -1,13 +1,13 @@
 import React from 'react'
 import { Handle, Position } from 'reactflow'
-import { Progress } from "@client/app/components/ui/progress"
-import { Badge } from "@client/app/components/ui/badge"
+import { Progress } from "@client/components/ui/progress";
+import { Badge } from "@client/components/ui/badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@client/app/components/ui/popover"
-import { Button } from "@client/app/components/ui/button"
+} from "@client/components/ui/popover";
+import { Button } from "@client/components/ui/button";
 import { ThumbsUp, ThumbsDown } from 'lucide-react'
 
 export function SymptomNode({ data }) {

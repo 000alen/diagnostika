@@ -1,14 +1,13 @@
-import React from 'react'
-import { Handle, Position } from 'reactflow'
-import { Progress } from "@client/app/components/ui/progress"
-import { Badge } from "@client/app/components/ui/badge"
+import { Handle, Position } from "reactflow";
+import { Progress } from "@client/components/ui/progress";
+import { Badge } from "@client/components/ui/badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@client/app/components/ui/popover"
-import { Button } from "@client/app/components/ui/button"
-import { ThumbsUp, ThumbsDown } from 'lucide-react'
+} from "@client/components/ui/popover";
+import { Button } from "@client/components/ui/button";
+import { ThumbsUp, ThumbsDown } from "lucide-react"
 
 export function SymptomNode({ data }: { data: any }) {
   return (
@@ -67,7 +66,7 @@ export function DiagnosisNode({ data }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className={`px-4 py-2 shadow-md rounded-md bg-emerald-50 border border-emerald-200 w-64 cursor-pointer ${data.rank > 1 ? 'opacity-70 hover:opacity-100 transition-opacity duration-200' : ''}`}>
+        <div className={`px-4 py-2 shadow-md rounded-md bg-emerald-50 border border-emerald-200 w-64 cursor-pointer ${data.rank > 1 ? "opacity-70 hover:opacity-100 transition-opacity duration-200" : ""}`}>
           <div className="font-bold text-emerald-700">Diagnosis {data.rank}</div>
           <div className="font-semibold text-emerald-900">{data.label}</div>
           <div className="mt-2">
@@ -79,7 +78,7 @@ export function DiagnosisNode({ data }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => console.log('Approved')}
+              onClick={() => console.log("Approved")}
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
@@ -88,7 +87,7 @@ export function DiagnosisNode({ data }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => console.log('Rejected')}
+              onClick={() => console.log("Rejected")}
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsDown className="w-4 h-4 mr-2" />

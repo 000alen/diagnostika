@@ -9,7 +9,7 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 
 import { cn } from "../../lib/utils";
 import { Button } from "@nextui-org/button";
-import { Calendar } from "@client/app/components/ui/calendar";
+import { Calendar } from "@client/components/ui/calendar";
 
 import {
   Card,
@@ -17,7 +17,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@client/app/components/ui/card"
+} from "@client/components/ui/card"
 
 import {
   Form,
@@ -27,16 +27,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@client/app/components/ui/form"
+} from "@client/components/ui/form"
 
-import { Input } from "@client/app/components/ui/input"
+import { Input } from "@client/components/ui/input"
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@client/app/components/ui/popover"
-import { toast } from "@client/app/hooks/use-toast"
+} from "@client/components/ui/popover"
+import { toast } from "@client/hooks/use-toast"
 
 const formSchema = z.object({
   name: z.string().min(2, {

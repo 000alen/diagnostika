@@ -7,11 +7,11 @@ import { Button } from "@nextui-org/button";
 import { Badge } from "@nextui-org/badge";
 import { Bell } from 'lucide-react';
 //
-import OverviewTab from "../components/tabs/overview";
-import PatientsTab from "../components/tabs/patients";
-import DiagnosticsTab from "../components/tabs/diagnostics";
-import SettingsTab from "../components/tabs/settings";
-import avatar from "../assets/avatar.png";
+import OverviewTab from "../../components/tabs/overview";
+import PatientsTab from "../../components/tabs/patients";
+import DiagnosticsTab from "../../components/tabs/diagnostics";
+import SettingsTab from "../../components/tabs/settings";
+import avatar from "../../assets/avatar.png";
 import layout from "./page.module.scss";
 
 const tabs = [
@@ -61,6 +61,7 @@ const ReviewerDashboard = () => {
           </Dropdown>
         </div>
       </header>
+      {/* No fixear el color="white", así funciona por ahora hehe */}
       <Tabs aria-label="Reviewer Dashboard" className={layout.tabs}  radius="full" color="white">
         {tabs.map((tab) => (
           <Tab key={tab.name} title={tab.name}>
