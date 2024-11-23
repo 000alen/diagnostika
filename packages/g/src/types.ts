@@ -84,3 +84,74 @@ export const Evaluation = z.object({
 });
 
 export type Evaluation = z.infer<typeof Evaluation>;
+
+export const NodeType = z.enum(["Symptom", "Exam"]);
+
+export type NodeType = z.infer<typeof NodeType>;
+
+export const EdgeType = z.enum(["Evaluation", "Related"]);
+
+export type EdgeType = z.infer<typeof EdgeType>;
+
+export const BaseNode = z.object({
+  id: z.string().describe("The unique identifier of the node"),
+  type: NodeType.describe("The type of the node"),
+  embedding: z.number().array().describe("The embedding of the node"),
+});
+
+export type BaseNode = z.infer<typeof BaseNode>;
+
+export const SymptomNode = BaseNode.extend({
+  type: z.literal("Symptom"),
+  symptom: SymptomWithEmbedding.describe("The symptom"),
+});
+
+export type SymptomNode = z.infer<typeof SymptomNode>;
+
+export const ExamNode = BaseNode.extend({
+  type: z.literal("Exam"),
+  exam: Exam.describe("The exam"),
+});
+
+export const Node = z.discriminatedUnion("type", [SymptomNode, ExamNode]);
+
+export type Node = z.infer<typeof Node>;
+
+export const BaseEdge = z.object({
+  id: z.string().describe("The unique identifier of the edge"),
+  type: EdgeType.describe("The type of the edge"),
+
+  source: z.string().describe("The unique identifier of the source node"),
+  sourceEmbedding: z
+    .number()
+    .array()
+    .describe("The embedding of the source node"),
+
+  target: z.string().describe("The unique identifier of the target node"),
+  targetEmbedding: z
+    .number()
+    .array()
+    .describe("The embedding of the target node"),
+
+  embedding: z.number().array().describe("The embedding of the edge"),
+});
+
+export type BaseEdge = z.infer<typeof BaseEdge>;
+
+export const EvaluationEdge = BaseEdge.extend({
+  type: z.literal("Evaluation"),
+  evaluation: Evaluation.describe("The evaluation"),
+});
+
+export type EvaluationEdge = z.infer<typeof EvaluationEdge>;
+
+export const RelatedEdge = BaseEdge.extend({
+  type: z.literal("Related"),
+  weight: z.number().describe("The weight of the relatedness"),
+});
+
+export type RelatedEdge = z.infer<typeof RelatedEdge>;
+
+export const Edge = z.discriminatedUnion("type", [EvaluationEdge, RelatedEdge]);
+
+export type Edge = z.infer<typeof Edge>;
