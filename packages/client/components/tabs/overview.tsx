@@ -8,21 +8,25 @@ import layout from "./overview.module.scss";
 
 const OverviewTab = () => {
   return (
-    <ResizablePanelGroup direction="horizontal" className="pl-5 pr-5">
-      <ResizablePanel>
-        <div>
-          <h1 className="text-4xl font-bold mb-3">Vista General</h1>
-          <h2 className="text-5xl">Marcelo Lemus</h2>
-          <div className={layout.graphs}>
-            <NodesComponent />
+    <div className={layout.container}>
+      <ResizablePanelGroup direction="horizontal" className="pl-5 pr-5">
+        <ResizablePanel>
+          <div className={layout.leftPanel}>
+            <div className={layout.content}>
+              <h1 className="text-4xl font-bold mb-1">Vista General</h1>
+              <h2 className="text-5xl">Marcelo Lemus</h2>
+            </div>
+            <div className={layout.graphs}>
+              <NodesComponent />
+            </div>
           </div>
-        </div>
-      </ResizablePanel>
-      <ResizableHandle className="ml-3 mr-3" />
-      <ResizablePanel>
-        <BentoGridSide />
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </ResizablePanel>
+        <ResizableHandle className="ml-3 mr-3" />
+        <ResizablePanel>
+          <BentoGridSide />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 }
 

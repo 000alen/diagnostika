@@ -63,7 +63,6 @@ export default function Page({ evaluationId }: { evaluationId: string }) {
           </Dropdown>
         </div>
       </header>
-      {/* No fixear el color="white", así funciona por ahora hehe */}
       <Tabs
         aria-label="Reviewer Dashboard"
         className={layout.tabs}

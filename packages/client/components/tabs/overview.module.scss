@@ -1,40 +1,29 @@
-$header-height: 90px;
-
-.layoutWrapper {
+//
+.container {
+  height: calc(100dvh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  margin: 1rem;
   display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  margin-left: 1.25rem;
 }
 
-.leftWrapper {
+.leftPanel {
   flex: 1;
-  height: calc(100dvh - $header-height - 4px);
-  width: 100%;
-  box-sizing: border-box;
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 88%;
+}
 
-  > div {
-    border: 1px solid red;
-    height: 100%;
-    width: 100%;
-  }
+.content {
+  padding: 1rem 1rem 0 1rem;
 }
 
 .graphs {
-  margin-top: 1.25rem;
-  background-color: white;
-  background-color: gold;
-  border-radius: 40px;
-  height: 100%;
-  width: 100%;
-}
-
-.rightWrapper {
   flex: 1;
-  background-color: lightgreen;
-  height: calc(100dvh - $header-height - 4px);
-  width: 100%;
-  box-sizing: border-box;
+  margin-top: .6rem;
+  background-color: white;
+  border-radius: 40px;
+  min-height: 0;
+  border: 1px solid #e0e0e0;
 }

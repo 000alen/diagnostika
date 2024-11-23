@@ -198,8 +198,9 @@ export const NodesComponent = () => {
   )
 
   return (
-    <div className="w-full h-screen">
+    <div style={{ width: "100%", height: "100%", borderRadius: 40 }}>
       <ReactFlow
+        style={{ width: "100%", height: "100%", borderRadius: 40 }}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
