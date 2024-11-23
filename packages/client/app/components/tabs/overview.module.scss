@@ -4,6 +4,7 @@ $header-height: 90px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  margin-left: 1.25rem;
 }
 
 .leftWrapper {
@@ -11,12 +12,21 @@ $header-height: 90px;
   height: calc(100dvh - $header-height - 4px);
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+
+  > div {
+    border: 1px solid red;
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .graphs {
+  margin-top: 1.25rem;
   background-color: white;
+  background-color: gold;
   border-radius: 40px;
-  // border: 2px solid cyan;
   height: 100%;
   width: 100%;
 }

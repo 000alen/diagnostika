@@ -111,7 +111,7 @@ const OverviewTab = () => {
   return (
     <section className={layout.layoutWrapper}>
       <div className={layout.leftWrapper}>
-        <div className="m-4">
+        <div>
           <h1 className="text-4xl font-bold mb-3">Vista General</h1>
           <h2 className="text-5xl">Marcelo Lemus</h2>
           <div className={layout.graphs}>
