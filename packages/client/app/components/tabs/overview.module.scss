@@ -1,0 +1,30 @@
+$header-height: 90px;
+
+.layoutWrapper {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.leftWrapper {
+  flex: 1;
+  height: calc(100dvh - $header-height - 4px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.graphs {
+  background-color: white;
+  border-radius: 40px;
+  // border: 2px solid cyan;
+  height: 100%;
+  width: 100%;
+}
+
+.rightWrapper {
+  flex: 1;
+  background-color: lightgreen;
+  height: calc(100dvh - $header-height - 4px);
+  width: 100%;
+  box-sizing: border-box;
+}

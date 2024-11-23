@@ -1,6 +1,6 @@
 "use client"
-
-import React, { useCallback } from 'react'
+//
+import React, { useCallback } from "react";
 import ReactFlow, {
   Node,
   Edge,
@@ -10,25 +10,23 @@ import ReactFlow, {
   Background,
   Controls,
   MarkerType,
-} from 'reactflow'
-import dagre from 'dagre'
-import 'reactflow/dist/style.css'
-import { SymptomNode, ExamNode, DiagnosisNode } from './viz/nodes/CustomNodes'
-import CustomEdge from './viz/nodes/CustomEdge'
+} from "reactflow";
+import dagre from "dagre";
+import "reactflow/dist/style.css";
+//
+import { SymptomNode, ExamNode, DiagnosisNode } from "./CustomNodes";
+import CustomEdge from "./CustomEdge";
 
-const nodeWidth = 256
-const nodeHeight = 200
-
+const nodeWidth = 256;
+const nodeHeight = 200;
+const edgeTypes = { custom: CustomEdge };
 const nodeTypes = {
   symptom: SymptomNode,
   exam: ExamNode,
   diagnosis: DiagnosisNode,
-}
+};
 
-const edgeTypes = {
-  custom: CustomEdge,
-}
-
+/** Demo data for nodes and edges */
 const initialNodes: Node[] = [
   { 
     id: '1', 
@@ -132,7 +130,7 @@ const initialNodes: Node[] = [
     }, 
     position: { x: 0, y: 0 } 
   },
-]
+];
 
 const initialEdges: Edge[] = [
   { id: 'e1-2', source: '1', target: '2', type: 'custom', animated: true },
@@ -141,7 +139,7 @@ const initialEdges: Edge[] = [
   { id: 'e2-7', source: '2', target: '7', type: 'custom', animated: true },
   { id: 'e4-7', source: '4', target: '7', type: 'custom', animated: true },
   { id: 'e6-7', source: '6', target: '7', type: 'custom', animated: true },
-]
+];
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph()
@@ -160,7 +158,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
   nodes.forEach((node) => {
     const nodeWithPosition = dagreGraph.node(node.id)
-    node.targetPosition = 'top'
+    // @ts-ignore
+    node.targetPosition = 'top' 
+    // @ts-ignore
     node.sourcePosition = 'bottom'
     node.position = {
       x: nodeWithPosition.x - nodeWidth / 2,
@@ -176,7 +176,7 @@ const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
   initialEdges
 )
 
-export default function PatientInfoGraph() {
+export const NodesComponent = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges)
 
@@ -214,6 +214,5 @@ export default function PatientInfoGraph() {
         <Controls />
       </ReactFlow>
     </div>
-  )
+  );
 }
-

@@ -1,16 +1,16 @@
 import React from 'react'
 import { Handle, Position } from 'reactflow'
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { Progress } from "@client/app/components/ui/progress"
+import { Badge } from "@client/app/components/ui/badge"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
+} from "@client/app/components/ui/popover"
+import { Button } from "@client/app/components/ui/button"
 import { ThumbsUp, ThumbsDown } from 'lucide-react'
 
-export function SymptomNode({ data }) {
+export function SymptomNode({ data }: { data: any }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
