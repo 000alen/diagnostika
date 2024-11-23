@@ -1,0 +1,21 @@
+{
+  "name": "g",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@ai-sdk/amazon-bedrock": "^1.0.3",
+    "@ai-sdk/openai": "^1.0.4",
+    "ai": "^4.0.3"
+  }
+}
