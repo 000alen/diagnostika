@@ -4,6 +4,9 @@
   height: 100dvh;
   background-color: #f6f6f6;
   color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 
   header {
     height: 90px;
@@ -23,26 +26,6 @@
         }
       }
 
-      &:nth-child(2) {
-        button {
-          background-color: #ededed;
-          color: gray;
-          font-weight: 500;
-          margin-right: .25rem;
-          padding: 1.75rem 1.25rem;
-
-          &:first-child {
-            background-color: white;
-            color: #1e1e1e;
-            font-weight: 600;
-          }
-
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-
       &:last-child {
         display: flex;
         align-items: center;
@@ -58,6 +41,26 @@
           height: 100%;
           margin-left: .75rem;
         }
+      }
+    }
+  }
+}
+
+.tabs {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  > div {
+    button {
+      font-weight: 600;
+      margin-right: .25rem;
+      padding: 1.75rem 1.25rem;
+      background-color: #ededed;
+
+      span {
+        box-shadow: none;
       }
     }
   }
