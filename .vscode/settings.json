@@ -1,5 +1,4 @@
 {
-    "cSpell.words": [
-        "examinables"
-    ]
+  "cSpell.words": ["examinables"],
+  "conventionalCommits.scopes": ["client"]
 }
