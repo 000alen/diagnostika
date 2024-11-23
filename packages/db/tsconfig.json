@@ -1,6 +1,6 @@
 {
   "exclude": ["./dist", "./node_modules", "./drizzle.config.ts"],
-  "include": ["./src"],
+  "include": ["./src", "../client/lib/auth-client.ts"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
