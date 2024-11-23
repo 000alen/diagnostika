@@ -72,7 +72,7 @@ importers:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
       better-auth:
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0(encoding@0.1.13)
       class-variance-authority:
         specifier: ^0.7.0
@@ -123,8 +123,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.15)
       zod:
-        specifier: 3.16.0
-        version: 3.16.0
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@types/dagre':
         specifier: ^0.7.52
@@ -160,8 +160,11 @@ importers:
   packages/db:
     dependencies:
       better-auth:
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0(encoding@0.1.13)
+      better-call:
+        specifier: ^0.3.2
+        version: 0.3.2
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -174,6 +177,9 @@ importers:
       pg:
         specifier: ^8.13.1
         version: 8.13.1
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -215,7 +221,7 @@ importers:
         specifier: ^3.17.0
         version: 3.17.0
       zod:
-        specifier: ^3.23.8
+        specifier: 3.23.8
         version: 3.23.8
     devDependencies:
       tsx:
@@ -6911,9 +6917,6 @@ packages:
     resolution: {integrity: sha512-5wlSS0bXfF/BrL4jPAbz9da5hDlDptdEppYfe+x4eIJ7jioqKG9uUxOwPzqof09u/XeVdrgFu29lZi+8XNDJtA==}
     peerDependencies:
       zod: ^3.23.3
-
-  zod@3.16.0:
-    resolution: {integrity: sha512-szrIkryADbTM+xBt2a1KoS2CJQXec4f9xG78bj5MJeEH/XqmmHpnO+fG3IE115AKBJak+2HrbxLZkc9mhdbDKA==}
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -15219,8 +15222,6 @@ snapshots:
   zod-to-json-schema@3.23.5(zod@3.23.8):
     dependencies:
       zod: 3.23.8
-
-  zod@3.16.0: {}
 
   zod@3.23.8: {}
 

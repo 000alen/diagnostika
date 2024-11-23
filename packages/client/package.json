@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@bananus/db": "workspace:*",
-    "better-auth": "^1.0.0",
+    "better-auth": "1.0.0",
     "next": "15.0.3",
     "@hookform/resolvers": "^3.9.1",
     "@nextui-org/badge": "^2.0.32",
@@ -30,14 +30,12 @@
     "@trpc/server": "11.0.0-rc.608",
     "@xyflow/react": "^12.3.5",
     "autoprefixer": "^10.4.20",
-    "better-auth": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.460.0",
-    "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-day-picker": "8.10.1",
     "react-dom": "19.0.0-rc-66855b96-20241106",
@@ -47,7 +45,7 @@
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "3.16.0"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/dagre": "^0.7.52",
