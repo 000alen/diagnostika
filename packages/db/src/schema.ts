@@ -194,3 +194,66 @@ export const examinableCriteriaRelations = relations(
     }),
   })
 );
+
+export const snapshots = pgTable(
+  "snapshots",
+  {
+    id: serial("id").primaryKey(),
+    t: timestamp("t").notNull(),
+    descriptions: text("descriptions").array().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  }
+);
+
+export const exams = pgTable(
+  "exams",
+  {
+    id: serial("id").primaryKey(),
+    t: timestamp("t").notNull(),
+    description: text("description").notNull(),
+    snapshotId: integer("snapshot_id")
+      .references(() => snapshots.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  }
+);
+
+export const snapshotExams = pgTable(
+  "snapshot_exams",
+  {
+    snapshotId: integer("snapshot_id")
+      .references(() => snapshots.id, { onDelete: "cascade" })
+      .notNull(),
+    examId: integer("exam_id")
+      .references(() => exams.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.snapshotId, table.examId] }),
+  })
+);
+
+// Relations for snapshots
+export const snapshotsRelations = relations(snapshots, ({ many }) => ({
+  snapshotExams: many(snapshotExams),
+}));
+
+// Relations for exams
+export const examsRelations = relations(exams, ({ many }) => ({
+  snapshotExams: many(snapshotExams),
+}));
+
+// Relations for snapshotExams
+export const snapshotExamsRelations = relations(snapshotExams, ({ one }) => ({
+  snapshot: one(snapshots, {
+    fields: [snapshotExams.snapshotId],
+    references: [snapshots.id],
+  }),
+  exam: one(exams, {
+    fields: [snapshotExams.examId],
+    references: [exams.id],
+  }),
+}));
