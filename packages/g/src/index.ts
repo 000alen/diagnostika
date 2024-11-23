@@ -1,24 +1,26 @@
-import { generateObject } from "ai";
+import "dotenv/config";
+
+import { embed, generateObject, cosineSimilarity } from "ai";
 import { z } from "zod";
 import {
   Criteria,
+  CriteriaWithEmbedding,
   Evaluation,
   Exam,
   Examinable,
+  ExaminableWithEmbedding,
   Snapshot,
   Symptom,
+  SymptomWithEmbedding,
 } from "./types";
 import { flatten } from "./utils";
-import { gpt4o } from "./models";
-
-function sortSnapshots(snapshots: Array<Snapshot>) {
-  return snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
-}
+import { gpt4o, openaiEmbeddings } from "./models";
+import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 
 async function extractSymptomsFromDescription(
   description: string
-): Promise<Array<Symptom>> {
-  const result = await generateObject({
+): Promise<Array<SymptomWithEmbedding>> {
+  const { object } = await generateObject({
     model: gpt4o,
     schema: z.object({
       symptoms: Symptom.array(),
@@ -36,7 +38,21 @@ async function extractSymptomsFromDescription(
     ],
   });
 
-  return result.object.symptoms;
+  const withEmbeddings = await Promise.all(
+    object.symptoms.map(async (symptom) => {
+      const { embedding } = await embed({
+        model: openaiEmbeddings,
+        value: `${symptom.name}: ${symptom.description}`,
+      });
+
+      return {
+        ...symptom,
+        embedding,
+      };
+    })
+  );
+
+  return withEmbeddings;
 }
 
 async function extractSymptomsFromDescriptions(descriptions: string[]) {
@@ -49,8 +65,8 @@ async function extractSymptomsFromDescriptions(descriptions: string[]) {
 
 async function extractExaminablesFromExam(
   exam: Exam
-): Promise<Array<Examinable>> {
-  const result = await generateObject({
+): Promise<Array<ExaminableWithEmbedding>> {
+  const { object } = await generateObject({
     model: gpt4o,
     schema: z.object({
       examinables: Examinable.array(),
@@ -68,41 +84,95 @@ async function extractExaminablesFromExam(
     ],
   });
 
-  return result.object.examinables;
+  const withEmbeddings = await Promise.all(
+    object.examinables.map(async (examinable) => {
+      const { embedding } = await embed({
+        model: openaiEmbeddings,
+        value: `${examinable.name}: ${examinable.description}`,
+      });
+
+      return {
+        ...examinable,
+        embedding,
+      };
+    })
+  );
+
+  return withEmbeddings;
 }
 
 async function getRelatedSymptomsFromExaminable(
-  examinable: Examinable
-): Promise<Array<Symptom>> {
-  throw new Error("Not implemented");
+  examinable: ExaminableWithEmbedding
+): Promise<Array<SymptomWithEmbedding>> {
+  await ready;
+
+  const THRESHOLD = 0.8;
+
+  const similarities = EXAMINABLES.map((e) =>
+    cosineSimilarity(examinable.embedding, e.embedding)
+  );
+
+  const relatedSymptoms = EXAMINABLES.filter(
+    (_, i) => similarities[i] > THRESHOLD
+  ).map((examinable) => SYMPTOMS.find((s) => s.name === examinable.symptom)!);
+
+  return relatedSymptoms;
 }
 
-async function getCandidateSymptomsFromExam(
-  exam: Exam
-): Promise<Array<Symptom>> {
+async function getCandidateSymptomsFromExam(exam: Exam): Promise<
+  Array<{
+    symptoms: Array<SymptomWithEmbedding>;
+    examinable: ExaminableWithEmbedding;
+  }>
+> {
   const examinables = await extractExaminablesFromExam(exam);
 
-  const relatedSymptoms = await Promise.all(
+  const nSymptoms = await Promise.all(
     examinables.map(getRelatedSymptomsFromExaminable)
   );
 
-  const flattenedSymptoms = flatten(relatedSymptoms);
-
-  // Deduplicate symptoms by name
-  return Array.from(
-    new Map(
-      flattenedSymptoms.map((symptom) => [symptom.name, symptom])
-    ).values()
+  return nSymptoms.map(
+    (symptoms, i) =>
+      ({
+        symptoms,
+        examinable: examinables[i],
+      } satisfies {
+        symptoms: Array<SymptomWithEmbedding>;
+        examinable: ExaminableWithEmbedding;
+      })
   );
 }
 
-async function getSymptomCriterion(symptom: Symptom): Promise<Criteria> {
-  throw new Error("Not implemented");
+async function getSymptomExaminableCriterion(
+  symptom: SymptomWithEmbedding,
+  examinable: ExaminableWithEmbedding
+): Promise<CriteriaWithEmbedding> {
+  await ready;
+
+  const similarities = EXAMINABLES.filter(
+    (e) => e.symptom === symptom.name
+  ).map((e) => cosineSimilarity(examinable.embedding, e.embedding));
+
+  let closestExaminable = EXAMINABLES[0];
+  let closestSimilarity = similarities[0];
+  for (let i = 1; i < similarities.length; i++) {
+    if (similarities[i] > closestSimilarity) {
+      closestExaminable = EXAMINABLES[i];
+      closestSimilarity = similarities[i];
+    }
+  }
+
+  const criterion = CRITERION.find(
+    (c) => c.examinable === closestExaminable.name && c.symptom === symptom.name
+  )!;
+
+  return criterion;
 }
 
-async function evaluateSymptomCriterion(
+async function evaluateSymptomExaminableCriterion(
   exam: Exam,
   symptom: Symptom,
+  examinable: Examinable,
   criterion: Criteria
 ): Promise<Evaluation> {
   const result = await generateObject({
@@ -116,7 +186,7 @@ async function evaluateSymptomCriterion(
       },
       {
         role: "user",
-        content: JSON.stringify({ exam, symptom, criterion }),
+        content: JSON.stringify({ exam, symptom, examinable, criterion }),
       },
     ],
   });
@@ -130,19 +200,40 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
     evaluation: Evaluation;
   }>
 > {
-  const candidateSymptoms = await getCandidateSymptomsFromExam(exam);
+  const symptomsAndExaminable = await getCandidateSymptomsFromExam(exam);
 
-  const criterion = await Promise.all(
-    candidateSymptoms.map(getSymptomCriterion)
-  );
+  const unresolvedTriplets: Array<{
+    symptom: SymptomWithEmbedding;
+    examinable: ExaminableWithEmbedding;
+    criteriaPromise: Promise<CriteriaWithEmbedding>;
+  }> = [];
+  for (const { symptoms, examinable } of symptomsAndExaminable) {
+    for (const symptom of symptoms) {
+      unresolvedTriplets.push({
+        symptom,
+        examinable,
+        criteriaPromise: getSymptomExaminableCriterion(symptom, examinable),
+      });
+    }
+  }
 
-  const evaluations = await Promise.all(
-    candidateSymptoms.map((symptom, i) =>
-      evaluateSymptomCriterion(exam, symptom, criterion[i])
+  const triplets = await Promise.all(
+    unresolvedTriplets.map(
+      async ({ symptom, examinable, criteriaPromise }) => ({
+        symptom,
+        examinable,
+        criteria: await criteriaPromise,
+      })
     )
   );
 
-  return candidateSymptoms.map((symptom, i) => ({
+  const evaluations = await Promise.all(
+    triplets.map(({ symptom, examinable, criteria }, i) =>
+      evaluateSymptomExaminableCriterion(exam, symptom, examinable, criteria)
+    )
+  );
+
+  return triplets.map(({ symptom }, i) => ({
     symptom,
     evaluation: evaluations[i],
   }));
@@ -163,7 +254,7 @@ async function extractSymptomsFromExams(
 }
 
 async function buildGraph(snapshots: Array<Snapshot>) {
-  snapshots = sortSnapshots(snapshots);
+  snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
 
   // Phase 1
   for (const snapshot of snapshots) {
@@ -172,11 +263,26 @@ async function buildGraph(snapshots: Array<Snapshot>) {
     );
 
     const detectedSymptoms = await extractSymptomsFromExams(snapshot.exams);
+
+    const symptoms = [...describedSymptoms, ...detectedSymptoms];
+
+    console.log(symptoms);
   }
 }
 
 async function main() {
-  const snapshots: Array<Snapshot> = [];
+  const snapshots: Array<Snapshot> = [
+    {
+      t: new Date(),
+      descriptions: [],
+      exams: [
+        {
+          t: new Date(),
+          description: "the patient has a high level of mucous",
+        },
+      ],
+    },
+  ];
 
   const graph = await buildGraph(snapshots);
 

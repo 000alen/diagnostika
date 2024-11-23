@@ -1,21 +1,8 @@
 import { z } from "zod";
 
-export interface Entity {
-  title: string;
-  url: string;
-  summary: string;
-}
-
-export interface Relation {
-  head: string;
-  tail: string;
-  implicit: boolean;
-  type?: string;
-
-  // TODO: properly type this
-  embedding?: Array<number>;
-  meta: Record<string, any>;
-}
+export const Embeddable = z.object({
+  embedding: z.number().array(),
+});
 
 export const Exam = z
   .object({
@@ -34,6 +21,10 @@ export const Examinable = z
   .describe("TODO");
 
 export type Examinable = z.infer<typeof Examinable>;
+
+export const ExaminableWithEmbedding = Examinable.merge(Embeddable);
+
+export type ExaminableWithEmbedding = z.infer<typeof ExaminableWithEmbedding>;
 
 export const Snapshot = z
   .object({
@@ -56,6 +47,10 @@ export const Symptom = z
 
 export type Symptom = z.infer<typeof Symptom>;
 
+export const SymptomWithEmbedding = Symptom.merge(Embeddable);
+
+export type SymptomWithEmbedding = z.infer<typeof SymptomWithEmbedding>;
+
 export const Criteria = z
   .object({
     name: z.string(),
@@ -64,6 +59,10 @@ export const Criteria = z
   .describe("TODO");
 
 export type Criteria = z.infer<typeof Criteria>;
+
+export const CriteriaWithEmbedding = Criteria.merge(Embeddable);
+
+export type CriteriaWithEmbedding = z.infer<typeof CriteriaWithEmbedding>;
 
 export const Evaluation = z.object({
   positive: z.boolean(),
