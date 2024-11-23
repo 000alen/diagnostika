@@ -1,7 +1,13 @@
 import "dotenv/config";
 import { logger } from "./logging";
 
-import { embed, generateObject, cosineSimilarity } from "ai";
+import {
+  embed,
+  generateObject,
+  cosineSimilarity,
+  LanguageModel,
+  EmbeddingModel,
+} from "ai";
 import { z } from "zod";
 import {
   Criteria,
@@ -15,13 +21,18 @@ import {
   SymptomWithEmbedding,
 } from "./types";
 import { flatten } from "./utils";
-import { gpt4o, openaiEmbeddings } from "./models";
 import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 import {
   PROMPT_EVALUATE_SYMPTOM,
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
+import { gpt4o, openaiEmbeddings } from "./models";
+
+interface Models {
+  model: LanguageModel;
+  embeddings: EmbeddingModel<string>;
+}
 
 // Add threshold constants
 const SIMILARITY_THRESHOLDS = {
@@ -29,12 +40,13 @@ const SIMILARITY_THRESHOLDS = {
 } as const;
 
 async function extractSymptomsFromDescription(
+  { model, embeddings }: Models,
   description: string
 ): Promise<Array<SymptomWithEmbedding>> {
   logger.debug("Extracting symptoms from description", { description });
 
   const { object } = await generateObject({
-    model: gpt4o,
+    model,
     schema: z.object({
       symptoms: Symptom.array(),
     }),
@@ -57,7 +69,7 @@ async function extractSymptomsFromDescription(
   const withEmbeddings = await Promise.all(
     object.symptoms.map(async (symptom) => {
       const { embedding } = await embed({
-        model: openaiEmbeddings,
+        model: embeddings,
         value: `${symptom.name}: ${symptom.description}`,
       });
 
@@ -74,21 +86,25 @@ async function extractSymptomsFromDescription(
   return withEmbeddings;
 }
 
-async function extractSymptomsFromDescriptions(descriptions: string[]) {
+async function extractSymptomsFromDescriptions(
+  models: Models,
+  descriptions: string[]
+) {
   const nSymptoms = await Promise.all(
-    descriptions.map(extractSymptomsFromDescription)
+    descriptions.map((d) => extractSymptomsFromDescription(models, d))
   );
 
   return flatten(nSymptoms);
 }
 
 async function extractExaminablesFromExam(
+  { model, embeddings }: Models,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
   logger.debug("Extracting examinables from exam", { exam });
 
   const { object } = await generateObject({
-    model: gpt4o,
+    model,
     schema: z.object({
       examinables: Examinable.array(),
     }),
@@ -111,7 +127,7 @@ async function extractExaminablesFromExam(
   const withEmbeddings = await Promise.all(
     object.examinables.map(async (examinable) => {
       const { embedding } = await embed({
-        model: openaiEmbeddings,
+        model: embeddings,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -161,13 +177,16 @@ async function getRelatedSymptomsFromExaminable(
   return relatedSymptoms;
 }
 
-async function getCandidateSymptomsFromExam(exam: Exam): Promise<
+async function getCandidateSymptomsFromExam(
+  models: Models,
+  exam: Exam
+): Promise<
   Array<{
     symptoms: Array<SymptomWithEmbedding>;
     examinable: ExaminableWithEmbedding;
   }>
 > {
-  const examinables = await extractExaminablesFromExam(exam);
+  const examinables = await extractExaminablesFromExam(models, exam);
 
   const nSymptoms = await Promise.all(
     examinables.map(getRelatedSymptomsFromExaminable)
@@ -219,6 +238,7 @@ async function getSymptomExaminableCriterion(
 }
 
 async function evaluateSymptomExaminableCriterion(
+  { model }: Models,
   exam: Exam,
   symptom: Symptom,
   examinable: Examinable,
@@ -230,7 +250,7 @@ async function evaluateSymptomExaminableCriterion(
   });
 
   const result = await generateObject({
-    model: gpt4o,
+    model,
     schema: Evaluation,
     messages: [
       {
@@ -252,7 +272,10 @@ async function evaluateSymptomExaminableCriterion(
   return result.object;
 }
 
-async function extractSymptomsFromExam(exam: Exam): Promise<
+async function extractSymptomsFromExam(
+  models: Models,
+  exam: Exam
+): Promise<
   Array<{
     symptom: Symptom;
     evaluation: Evaluation;
@@ -262,7 +285,10 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
     examTimestamp: exam.t,
   });
 
-  const symptomsAndExaminable = await getCandidateSymptomsFromExam(exam);
+  const symptomsAndExaminable = await getCandidateSymptomsFromExam(
+    models,
+    exam
+  );
   logger.debug("Found candidate symptoms and examinables", {
     candidateCount: symptomsAndExaminable.length,
   });
@@ -294,7 +320,13 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
 
   const evaluations = await Promise.all(
     triplets.map(({ symptom, examinable, criteria }, i) =>
-      evaluateSymptomExaminableCriterion(exam, symptom, examinable, criteria)
+      evaluateSymptomExaminableCriterion(
+        models,
+        exam,
+        symptom,
+        examinable,
+        criteria
+      )
     )
   );
 
@@ -309,10 +341,11 @@ async function extractSymptomsFromExam(exam: Exam): Promise<
 }
 
 async function extractSymptomsFromExams(
+  models: Models,
   exams: Array<Exam>
 ): Promise<Array<Symptom>> {
   const symptomsAndEvaluations = await Promise.all(
-    exams.map(extractSymptomsFromExam)
+    exams.map((e) => extractSymptomsFromExam(models, e))
   );
 
   return flatten(
@@ -322,7 +355,7 @@ async function extractSymptomsFromExams(
   );
 }
 
-async function buildGraph(snapshots: Array<Snapshot>) {
+async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   logger.info("Building graph from snapshots", {
     snapshotCount: snapshots.length,
   });
@@ -338,10 +371,14 @@ async function buildGraph(snapshots: Array<Snapshot>) {
     });
 
     const describedSymptoms = await extractSymptomsFromDescriptions(
+      models,
       snapshot.descriptions
     );
 
-    const detectedSymptoms = await extractSymptomsFromExams(snapshot.exams);
+    const detectedSymptoms = await extractSymptomsFromExams(
+      models,
+      snapshot.exams
+    );
 
     const symptoms = [...describedSymptoms, ...detectedSymptoms];
 
@@ -370,7 +407,13 @@ async function main() {
   ];
 
   try {
-    const graph = await buildGraph(snapshots);
+    const graph = await buildGraph(
+      {
+        model: gpt4o,
+        embeddings: openaiEmbeddings,
+      },
+      snapshots
+    );
     logger.info("Successfully built symptom graph");
   } catch (error) {
     logger.error("Failed to build symptom graph", {
