@@ -20,6 +20,9 @@ importers:
       '@nextui-org/button':
         specifier: ^2.0.38
         version: 2.0.38(@nextui-org/system@2.2.6(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(framer-motion@11.11.17(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(framer-motion@11.11.17(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
+      '@nextui-org/dropdown':
+        specifier: ^2.1.31
+        version: 2.1.31(@nextui-org/system@2.2.6(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(framer-motion@11.11.17(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(@nextui-org/theme@2.2.11(tailwindcss@3.4.15))(@types/react@18.3.12)(framer-motion@11.11.17(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       '@nextui-org/react':
         specifier: ^2.4.8
         version: 2.4.8(@types/react@18.3.12)(framer-motion@11.11.17(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(tailwindcss@3.4.15)
@@ -8380,7 +8383,7 @@ snapshots:
       '@react-aria/live-announcer': 3.4.1
       '@react-aria/utils': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@react-stately/calendar': 3.5.1(react@19.0.0-rc-66855b96-20241106)
-      '@react-types/button': 3.9.4(react@19.0.0-rc-66855b96-20241106)
+      '@react-types/button': 3.10.1(react@19.0.0-rc-66855b96-20241106)
       '@react-types/calendar': 3.4.6(react@19.0.0-rc-66855b96-20241106)
       '@react-types/shared': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@swc/helpers': 0.5.13
@@ -8448,7 +8451,7 @@ snapshots:
   '@react-aria/dialog@3.5.14(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)':
     dependencies:
       '@react-aria/focus': 3.19.0(react@19.0.0-rc-66855b96-20241106)
-      '@react-aria/overlays': 3.22.1(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
+      '@react-aria/overlays': 3.24.0(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       '@react-aria/utils': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@react-types/dialog': 3.5.14(react@19.0.0-rc-66855b96-20241106)
       '@react-types/shared': 3.26.0(react@19.0.0-rc-66855b96-20241106)
@@ -8625,10 +8628,10 @@ snapshots:
       '@react-aria/selection': 3.21.0(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       '@react-aria/utils': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@react-stately/collections': 3.12.0(react@19.0.0-rc-66855b96-20241106)
-      '@react-stately/menu': 3.7.1(react@19.0.0-rc-66855b96-20241106)
-      '@react-stately/tree': 3.8.1(react@19.0.0-rc-66855b96-20241106)
+      '@react-stately/menu': 3.9.0(react@19.0.0-rc-66855b96-20241106)
+      '@react-stately/tree': 3.8.6(react@19.0.0-rc-66855b96-20241106)
       '@react-types/button': 3.10.1(react@19.0.0-rc-66855b96-20241106)
-      '@react-types/menu': 3.9.9(react@19.0.0-rc-66855b96-20241106)
+      '@react-types/menu': 3.9.13(react@19.0.0-rc-66855b96-20241106)
       '@react-types/shared': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@swc/helpers': 0.5.13
       react: 19.0.0-rc-66855b96-20241106
@@ -8660,7 +8663,7 @@ snapshots:
       '@react-aria/interactions': 3.22.5(react@19.0.0-rc-66855b96-20241106)
       '@react-aria/ssr': 3.9.7(react@19.0.0-rc-66855b96-20241106)
       '@react-aria/utils': 3.26.0(react@19.0.0-rc-66855b96-20241106)
-      '@react-aria/visually-hidden': 3.8.12(react@19.0.0-rc-66855b96-20241106)
+      '@react-aria/visually-hidden': 3.8.18(react@19.0.0-rc-66855b96-20241106)
       '@react-stately/overlays': 3.6.12(react@19.0.0-rc-66855b96-20241106)
       '@react-types/button': 3.10.1(react@19.0.0-rc-66855b96-20241106)
       '@react-types/overlays': 3.8.11(react@19.0.0-rc-66855b96-20241106)
@@ -8992,7 +8995,7 @@ snapshots:
   '@react-stately/menu@3.7.1(react@19.0.0-rc-66855b96-20241106)':
     dependencies:
       '@react-stately/overlays': 3.6.12(react@19.0.0-rc-66855b96-20241106)
-      '@react-types/menu': 3.9.9(react@19.0.0-rc-66855b96-20241106)
+      '@react-types/menu': 3.9.13(react@19.0.0-rc-66855b96-20241106)
       '@react-types/shared': 3.26.0(react@19.0.0-rc-66855b96-20241106)
       '@swc/helpers': 0.5.13
       react: 19.0.0-rc-66855b96-20241106
