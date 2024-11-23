@@ -21,13 +21,25 @@ import {
   SymptomWithEmbedding,
 } from "./types";
 import { flatten, product } from "./utils";
-import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 import {
   PROMPT_EVALUATE_SYMPTOM,
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
 import { titanEmbeddings, sonnet } from "./models";
+import {
+  db,
+  symptoms,
+  examinables,
+  criteria,
+  symptomExaminables,
+  examinableCriteria,
+  cosineDistance,
+  desc,
+  gt,
+  sql,
+  eq,
+} from "@bananus/db";
 
 interface Models {
   model: LanguageModel;
@@ -151,30 +163,34 @@ async function getRelatedSymptomsFromExaminable(
     examinableName: examinable.name,
   });
 
-  await ready;
+  // Calculate similarity with all examinables in the database
+  const similarity = sql<number>`1 - (${cosineDistance(
+    examinables.embedding,
+    examinable.embedding
+  )})`;
 
-  const similarities = EXAMINABLES.map((e) =>
-    cosineSimilarity(examinable.embedding, e.embedding)
-  );
-
-  const maxSimilarity = Math.max(...similarities);
-  const maxIndex = similarities.indexOf(maxSimilarity);
-  logger.debug("Similarity scores", {
-    examinableName: examinable.name,
-    highestSimilarity: maxSimilarity,
-    highestMatch: EXAMINABLES[maxIndex].name,
-    threshold: SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS,
-  });
-
-  const relatedSymptoms = EXAMINABLES.filter(
-    (_, i) => similarities[i] > SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS
-  ).map((examinable) => SYMPTOMS.find((s) => s.name === examinable.symptom)!);
+  const relatedSymptoms = await db
+    .select({
+      symptom: symptoms,
+    })
+    .from(symptoms)
+    .innerJoin(
+      symptomExaminables,
+      eq(symptomExaminables.symptomId, symptoms.id)
+    )
+    .innerJoin(examinables, eq(examinables.id, symptomExaminables.examinableId))
+    .where(gt(similarity, SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS))
+    .orderBy(desc(similarity));
 
   logger.debug("Found related symptoms", {
     examinableName: examinable.name,
     relatedSymptomCount: relatedSymptoms.length,
   });
-  return relatedSymptoms;
+
+  return relatedSymptoms.map((r) => ({
+    ...r.symptom,
+    embedding: r.symptom.embedding as number[],
+  }));
 }
 
 async function getCandidateSymptomsFromExam(
@@ -208,33 +224,58 @@ async function getSymptomExaminableCriterion(
   symptom: SymptomWithEmbedding,
   examinable: ExaminableWithEmbedding
 ): Promise<CriteriaWithEmbedding> {
-  await ready;
+  // Find similar examinables that are linked to this symptom
+  const similarity = sql<number>`1 - (${cosineDistance(
+    examinables.embedding,
+    examinable.embedding
+  )})`;
 
-  const similarities = EXAMINABLES.filter(
-    (e) => e.symptom === symptom.name
-  ).map((e) => cosineSimilarity(examinable.embedding, e.embedding));
+  const similarExaminable = await db
+    .select({
+      examinable: examinables,
+      similarity,
+    })
+    .from(examinables)
+    .innerJoin(
+      symptomExaminables,
+      eq(symptomExaminables.examinableId, examinables.id)
+    )
+    .innerJoin(symptoms, eq(symptoms.id, symptomExaminables.symptomId))
+    .where(eq(symptoms.name, symptom.name))
+    .orderBy(desc(similarity))
+    .limit(1)
+    .then((results) => results[0]);
 
-  let closestExaminable = EXAMINABLES[0];
-  let closestSimilarity = similarities[0];
-  for (let i = 1; i < similarities.length; i++) {
-    if (similarities[i] > closestSimilarity) {
-      closestExaminable = EXAMINABLES[i];
-      closestSimilarity = similarities[i];
-    }
+  if (!similarExaminable) {
+    throw new Error(`No matching examinable found for symptom ${symptom.name}`);
   }
 
-  logger.debug("Found closest examinable match", {
-    symptomName: symptom.name,
-    examinableName: examinable.name,
-    closestMatch: closestExaminable.name,
-    similarity: closestSimilarity,
-  });
+  // Get the criterion for this examinable-symptom pair
+  const criterion = await db
+    .select({
+      criterion: criteria,
+    })
+    .from(criteria)
+    .innerJoin(
+      examinableCriteria,
+      eq(examinableCriteria.criteriaId, criteria.id)
+    )
+    .where(eq(examinableCriteria.examinableId, similarExaminable.examinable.id))
+    .then((results) => results[0]);
 
-  const criterion = CRITERION.find(
-    (c) => c.examinable === closestExaminable.name && c.symptom === symptom.name
-  )!;
+  if (!criterion) {
+    throw new Error(
+      `No criterion found for examinable ${similarExaminable.examinable.name}`
+    );
+  }
 
-  return criterion;
+  return {
+    ...criterion.criterion,
+    criteria: criterion.criterion.description,
+    embedding: criterion.criterion.embedding as number[],
+    // symptom: symptom.name,
+    // examinable: similarExaminable.examinable.name,
+  };
 }
 
 async function evaluateSymptomExaminableCriterion(
