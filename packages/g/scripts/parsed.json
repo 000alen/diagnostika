@@ -1,0 +1,148 @@
+[
+  {
+    "name": "Atrial fibrillation",
+    "description": "Atrial fibrillation  Atrial fibrillation Atrial fibrillation In a typical heart, a tiny group of cells at the sinus node sends out an electrical signal. The signal travels through the heart's upper chambers to the atrioventricular (AV) node. The signal then passes into the lower heart chambers, causing them to squeeze and pump out blood. In atrial fibrillation, electrical signals fire from many locations in the upper chambers, causing them to beat chaotically. Since the AV node doesn't prevent all of these chaotic signals from entering the lower chambers, the heart beats faster and irregularly., Atrial fibrillation (AFib) is an irregular and often very rapid heart rhythm. An irregular heart rhythm is called an arrhythmia. AFib can lead to blood clots in the heart. The condition also increases the risk of stroke, heart failure and other heart-related complications., , During atrial fibrillation, the heart's upper chambers — called the atria — beat chaotically and irregularly. They beat out of sync with the lower heart chambers, called the ventricles. For many people, AFib may have no symptoms. But AFib may cause a fast, pounding heartbeat, shortness of breath or light-headedness., Episodes of atrial fibrillation may come and go, or they may be persistent. AFib itself usually isn't life-threatening. But it's a serious medical condition that needs proper treatment to prevent stroke., Treatment for atrial fibrillation may include medicines, therapy to shock the heart back to a regular rhythm and procedures to block faulty heart signals., A person with atrial fibrillation also may have a related heart rhythm problem called atrial flutter. The treatments for AFib and atrial flutter are similar.,",
+    "symptoms": [
+      {
+        "name": "Palpitations",
+        "description": "Feelings of a fast, fluttering or pounding heartbeat, often described as heart palpitations."
+      },
+      {
+        "name": "Chest pain",
+        "description": "Discomfort or pain in the chest area, which may be a symptom of the irregular heart rhythm."
+      },
+      {
+        "name": "Dizziness",
+        "description": "A sensation of lightheadedness, vertigo or feeling faint, caused by the irregular blood flow from the atrial fibrillation."
+      },
+      {
+        "name": "Fatigue",
+        "description": "Excessive tiredness and lack of energy, potentially due to the heart's reduced pumping efficiency during atrial fibrillation episodes."
+      },
+      {
+        "name": "Lightheadedness",
+        "description": "A feeling of dizziness or unsteadiness, similar to dizziness but less severe, caused by the irregular blood flow."
+      },
+      {
+        "name": "Reduced exercise capacity",
+        "description": "A decreased ability to perform physical activities or exercise due to the heart's impaired pumping function during atrial fibrillation."
+      },
+      {
+        "name": "Shortness of breath",
+        "description": "Difficulty breathing or feeling winded, especially during physical exertion, as the heart struggles to pump blood effectively."
+      },
+      {
+        "name": "Weakness",
+        "description": "A feeling of lack of strength or energy, potentially caused by the reduced blood flow and oxygen delivery to the body's tissues."
+      }
+    ]
+  },
+  {
+    "name": "Abdominal aortic aneurysm",
+    "description": "Abdominal aortic aneurysm  Abdominal aortic aneurysm Abdominal aortic aneurysm An abdominal aortic aneurysm occurs when a lower part of the body's main artery, called the aorta, becomes weakened and bulges., An abdominal aortic aneurysm is an enlarged area in the lower part of the body's main artery, called the aorta. The aorta runs from the heart through the center of the chest and belly area, called the abdomen., The aorta is the largest blood vessel in the body. An abdominal aortic aneurysm that ruptures can cause life-threatening bleeding., , Treatment depends on the size of the aneurysm and how fast it's growing. Treatment varies from regular health checkups and imaging tests to emergency surgery.",
+    "symptoms": [
+      {
+        "name": "Abdominal pain",
+        "description": "A deep, constant pain in the belly area or side of the abdomen, which may indicate the presence of an abdominal aortic aneurysm that is growing or at risk of rupturing."
+      },
+      {
+        "name": "Back pain",
+        "description": "Pain in the back region, which can be a symptom of an abdominal aortic aneurysm putting pressure on surrounding structures or indicating potential complications."
+      },
+      {
+        "name": "Pulsating mass near bellybutton",
+        "description": "A pulsating mass or bulge that can be felt near the bellybutton area, which may be the enlarged and weakened aorta caused by an abdominal aortic aneurysm."
+      }
+    ]
+  },
+  {
+    "name": "Hyperhidrosis",
+    "description": "Hyperhidrosis (hi-pur-hi-DROE-sis) is excessive sweating that's not always related to heat or exercise. You may sweat so much that it soaks through your clothes or drips off your hands. Heavy sweating can disrupt your day and cause social anxiety and embarrassment., Hyperhidrosis treatment usually helps. It often begins with antiperspirants. If these don't help, you may need to try different medications and therapies. In severe cases, your health care provider may suggest surgery to remove the sweat glands or to disconnect the nerves related to producing too much sweat., , Sometimes an underlying condition may be found and treated.,",
+    "symptoms": [
+      {
+        "name": "Excessive sweating",
+        "description": "Hyperhidrosis causes excessive sweating that is not related to heat or exercise. The sweating is so severe that it can soak through clothes or drip off the hands."
+      },
+      {
+        "name": "Frequent sweating episodes",
+        "description": "For hyperhidrosis affecting the hands, feet, underarms or face, there is at least one episode of heavy sweating per week while awake. The sweating typically occurs on both sides of the body."
+      },
+      {
+        "name": "Social anxiety and embarrassment",
+        "description": "The excessive sweating associated with hyperhidrosis can cause significant social anxiety and embarrassment, disrupting daily activities and quality of life."
+      }
+    ]
+  },
+  {
+    "name": "Absence seizure",
+    "description": "Absence seizures involve brief, sudden lapses of consciousness. They're more common in children than in adults., A person having an absence seizure may stare blankly into space for a few seconds. Then the person typically returns quickly to being alert. This type of seizure usually doesn't lead to physical injury. But injury can result during the period when the person loses consciousness. This is particularly true if someone is driving a car or riding a bike when the seizure happens., , Absence seizures usually can be controlled with anti-seizure medicines. Some children who have them also develop other seizures, such as generalized tonic-clonic seizures or myoclonic seizures. Many children outgrow absence seizures in their teens.,",
+    "symptoms": [
+      {
+        "name": "Vacant stare",
+        "description": "A brief lapse of consciousness lasting about 10-30 seconds where the person stares blankly into space without responding to external stimuli."
+      },
+      {
+        "name": "Lip smacking",
+        "description": "Involuntary repetitive movements of the lips during the seizure episode."
+      },
+      {
+        "name": "Eyelid flutters",
+        "description": "Rapid blinking or fluttering of the eyelids that occurs during the absence seizure."
+      },
+      {
+        "name": "Chewing motions",
+        "description": "Unconscious chewing or jaw movements that happen during the seizure episode."
+      },
+      {
+        "name": "Finger rubbing",
+        "description": "Repetitive rubbing together or fidgeting of the fingers during the brief seizure."
+      },
+      {
+        "name": "Small hand movements",
+        "description": "Minor involuntary movements or twitching of the hands that occur during the absence seizure."
+      }
+    ]
+  },
+  {
+    "name": "Achalasia",
+    "description": "Achalasia is a swallowing condition that affects the tube connecting the mouth and the stomach, called the esophagus. Damaged nerves make it hard for the muscles of the esophagus to squeeze food and liquid into the stomach. Food then collects in the esophagus, sometimes fermenting and washing back up into the mouth. This fermented food can taste bitter., , Achalasia is a fairly rare condition. Some people mistake it for gastroesophageal reflux disease (GERD). However, in achalasia, the food is coming from the esophagus. In GERD, the material comes from the stomach., There's no cure for achalasia. Once the esophagus is damaged, the muscles cannot work properly again. But symptoms can usually be managed with endoscopy, minimally invasive therapy or surgery.,",
+    "symptoms": [
+      {
+        "name": "Difficulty swallowing (dysphagia)",
+        "description": "A sensation of food or liquid getting stuck in the throat or esophagus, making it difficult to swallow"
+      },
+      {
+        "name": "Regurgitation",
+        "description": "The involuntary return of swallowed food or saliva back up into the throat or mouth, often accompanied by a bitter or sour taste"
+      },
+      {
+        "name": "Heartburn",
+        "description": "A burning sensation in the chest or throat caused by the backflow of stomach contents into the esophagus"
+      },
+      {
+        "name": "Belching",
+        "description": "Frequent or excessive burping, often due to the buildup of air in the esophagus"
+      },
+      {
+        "name": "Chest pain",
+        "description": "Intermittent or recurring pain or discomfort in the chest area, potentially caused by the buildup of food or pressure in the esophagus"
+      },
+      {
+        "name": "Nocturnal coughing",
+        "description": "Coughing episodes during the night, possibly due to the aspiration of regurgitated food or liquid into the airways"
+      },
+      {
+        "name": "Aspiration pneumonia",
+        "description": "A lung infection caused by the inhalation of regurgitated food or liquid into the lungs"
+      },
+      {
+        "name": "Weight loss",
+        "description": "Unintentional weight loss due to the difficulty in swallowing and retaining food"
+      },
+      {
+        "name": "Vomiting",
+        "description": "The forceful expulsion of stomach contents through the mouth, potentially caused by the buildup of food in the esophagus"
+      }
+    ]
+  }
+]
