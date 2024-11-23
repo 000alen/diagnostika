@@ -1,3 +1,6 @@
+# TODO: remove when appropriate
+*.py
+
 # Logs
 logs
 *.log
