@@ -4,12 +4,11 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import { Symptom } from "../src/types";
 import data from "./data.json";
-import { sonnet } from "src/models";
-import { flatten } from "src/utils";
+import { sonnet } from "../src/models";
 import fs from "fs";
 
 async function main() {
-  const nSymptoms = [];
+  const nSymptoms: any[] = [];
 
   for (let i = 0; i < data.length; i++) {
     console.log(`Processing symptom ${i + 1}/${data.length}...`);
@@ -43,10 +42,7 @@ async function main() {
     symptoms: nSymptoms[i],
   }));
 
-  await fs.promises.writeFile(
-    "parsed.json",
-    JSON.stringify(object, null, 2)
-  );
+  await fs.promises.writeFile("parsed.json", JSON.stringify(object, null, 2));
 }
 
 main().catch(console.error);

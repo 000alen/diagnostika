@@ -1,18 +1,13 @@
 import "dotenv/config";
 import { logger } from "./logging";
 
-import {
-  embed,
-  generateObject,
-  cosineSimilarity,
-  LanguageModel,
-  EmbeddingModel,
-} from "ai";
+import { embed, generateObject, cosineSimilarity } from "ai";
 import { z } from "zod";
 import {
   Criteria,
   CriteriaWithEmbedding,
   Evaluation,
+  EvaluationWithEmbedding,
   Exam,
   Examinable,
   ExaminableWithEmbedding,
@@ -21,32 +16,44 @@ import {
   SymptomWithEmbedding,
 } from "./types";
 import { flatten, product } from "./utils";
-import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 import {
   PROMPT_EVALUATE_SYMPTOM,
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
-import { gpt4o, openaiEmbeddings } from "./models";
+import {
+  db,
+  symptoms,
+  examinables,
+  criteria,
+  symptomExaminables,
+  examinableCriteria,
+  cosineDistance,
+  desc,
+  gt,
+  sql,
+  eq,
+} from "@bananus/db";
+import { Graph } from "./graph";
+import { Models } from "./models";
 
-interface Models {
-  model: LanguageModel;
-  embeddings: EmbeddingModel<string>;
-}
+export * from "./models";
+export * from "./utils";
+export * from "./types";
 
 // Add threshold constants
 const SIMILARITY_THRESHOLDS = {
   RELATED_SYMPTOMS: 0.5, // Used in getRelatedSymptomsFromExaminable
 } as const;
 
-async function extractSymptomsFromDescription(
-  { model, embeddings }: Models,
+export async function extractSymptomsFromDescription(
+  models: Models,
   description: string
 ): Promise<Array<SymptomWithEmbedding>> {
   logger.debug("Extracting symptoms from description", { description });
 
   const { object } = await generateObject({
-    model,
+    model: models.language,
     schema: z.object({
       symptoms: Symptom.array(),
     }),
@@ -69,7 +76,7 @@ async function extractSymptomsFromDescription(
   const withEmbeddings = await Promise.all(
     object.symptoms.map(async (symptom) => {
       const { embedding } = await embed({
-        model: embeddings,
+        model: models.embedding,
         value: `${symptom.name}: ${symptom.description}`,
       });
 
@@ -83,28 +90,41 @@ async function extractSymptomsFromDescription(
   logger.debug("Completed symptom extraction with embeddings", {
     symptomCount: withEmbeddings.length,
   });
+
   return withEmbeddings;
 }
 
-async function extractSymptomsFromDescriptions(
+export async function extractSymptomsFromDescriptions(
   models: Models,
+  graph: Graph,
   descriptions: string[]
 ) {
   const nSymptoms = await Promise.all(
     descriptions.map((d) => extractSymptomsFromDescription(models, d))
   );
 
-  return flatten(nSymptoms);
+  const symptoms = flatten(nSymptoms);
+
+  for (const symptom of symptoms)
+    graph.addNode({
+      id: symptom.name,
+      type: "Symptom",
+      embedding: symptom.embedding,
+      symptom,
+    });
+
+  return symptoms;
 }
 
-async function extractExaminablesFromExam(
-  { model, embeddings }: Models,
+export async function extractExaminablesFromExam(
+  models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
   logger.debug("Extracting examinables from exam", { exam });
 
   const { object } = await generateObject({
-    model,
+    model: models.language,
     schema: z.object({
       examinables: Examinable.array(),
     }),
@@ -127,7 +147,7 @@ async function extractExaminablesFromExam(
   const withEmbeddings = await Promise.all(
     object.examinables.map(async (examinable) => {
       const { embedding } = await embed({
-        model: embeddings,
+        model: models.embedding,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -144,41 +164,46 @@ async function extractExaminablesFromExam(
   return withEmbeddings;
 }
 
-async function getRelatedSymptomsFromExaminable(
+export async function getRelatedSymptomsFromExaminable(
   examinable: ExaminableWithEmbedding
 ): Promise<Array<SymptomWithEmbedding>> {
   logger.debug("Finding related symptoms for examinable", {
     examinableName: examinable.name,
   });
 
-  await ready;
+  // Calculate similarity with all examinables in the database
+  const similarity = sql<number>`1 - (${cosineDistance(
+    examinables.embedding,
+    examinable.embedding
+  )})`;
 
-  const similarities = EXAMINABLES.map((e) =>
-    cosineSimilarity(examinable.embedding, e.embedding)
-  );
-
-  const maxSimilarity = Math.max(...similarities);
-  const maxIndex = similarities.indexOf(maxSimilarity);
-  logger.debug("Similarity scores", {
-    examinableName: examinable.name,
-    highestSimilarity: maxSimilarity,
-    highestMatch: EXAMINABLES[maxIndex].name,
-    threshold: SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS,
-  });
-
-  const relatedSymptoms = EXAMINABLES.filter(
-    (_, i) => similarities[i] > SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS
-  ).map((examinable) => SYMPTOMS.find((s) => s.name === examinable.symptom)!);
+  const relatedSymptoms = await db
+    .select({
+      symptom: symptoms,
+    })
+    .from(symptoms)
+    .innerJoin(
+      symptomExaminables,
+      eq(symptomExaminables.symptomId, symptoms.id)
+    )
+    .innerJoin(examinables, eq(examinables.id, symptomExaminables.examinableId))
+    .where(gt(similarity, SIMILARITY_THRESHOLDS.RELATED_SYMPTOMS))
+    .orderBy(desc(similarity));
 
   logger.debug("Found related symptoms", {
     examinableName: examinable.name,
     relatedSymptomCount: relatedSymptoms.length,
   });
-  return relatedSymptoms;
+
+  return relatedSymptoms.map((r) => ({
+    ...r.symptom,
+    embedding: r.symptom.embedding as number[],
+  }));
 }
 
-async function getCandidateSymptomsFromExam(
+export async function getCandidateSymptomsFromExam(
   models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<
   Array<{
@@ -186,7 +211,7 @@ async function getCandidateSymptomsFromExam(
     examinable: ExaminableWithEmbedding;
   }>
 > {
-  const examinables = await extractExaminablesFromExam(models, exam);
+  const examinables = await extractExaminablesFromExam(models, graph, exam);
 
   const nSymptoms = await Promise.all(
     examinables.map(getRelatedSymptomsFromExaminable)
@@ -204,53 +229,78 @@ async function getCandidateSymptomsFromExam(
   );
 }
 
-async function getSymptomExaminableCriterion(
+export async function getSymptomExaminableCriterion(
   symptom: SymptomWithEmbedding,
   examinable: ExaminableWithEmbedding
 ): Promise<CriteriaWithEmbedding> {
-  await ready;
+  // Find similar examinables that are linked to this symptom
+  const similarity = sql<number>`1 - (${cosineDistance(
+    examinables.embedding,
+    examinable.embedding
+  )})`;
 
-  const similarities = EXAMINABLES.filter(
-    (e) => e.symptom === symptom.name
-  ).map((e) => cosineSimilarity(examinable.embedding, e.embedding));
+  const similarExaminable = await db
+    .select({
+      examinable: examinables,
+      similarity,
+    })
+    .from(examinables)
+    .innerJoin(
+      symptomExaminables,
+      eq(symptomExaminables.examinableId, examinables.id)
+    )
+    .innerJoin(symptoms, eq(symptoms.id, symptomExaminables.symptomId))
+    .where(eq(symptoms.name, symptom.name))
+    .orderBy(desc(similarity))
+    .limit(1)
+    .then((results) => results[0]);
 
-  let closestExaminable = EXAMINABLES[0];
-  let closestSimilarity = similarities[0];
-  for (let i = 1; i < similarities.length; i++) {
-    if (similarities[i] > closestSimilarity) {
-      closestExaminable = EXAMINABLES[i];
-      closestSimilarity = similarities[i];
-    }
+  if (!similarExaminable) {
+    throw new Error(`No matching examinable found for symptom ${symptom.name}`);
   }
 
-  logger.debug("Found closest examinable match", {
-    symptomName: symptom.name,
-    examinableName: examinable.name,
-    closestMatch: closestExaminable.name,
-    similarity: closestSimilarity,
-  });
+  // Get the criterion for this examinable-symptom pair
+  const criterion = await db
+    .select({
+      criterion: criteria,
+    })
+    .from(criteria)
+    .innerJoin(
+      examinableCriteria,
+      eq(examinableCriteria.criteriaId, criteria.id)
+    )
+    .where(eq(examinableCriteria.examinableId, similarExaminable.examinable.id))
+    .then((results) => results[0]);
 
-  const criterion = CRITERION.find(
-    (c) => c.examinable === closestExaminable.name && c.symptom === symptom.name
-  )!;
+  if (!criterion) {
+    throw new Error(
+      `No criterion found for examinable ${similarExaminable.examinable.name}`
+    );
+  }
 
-  return criterion;
+  return {
+    ...criterion.criterion,
+    criteria: criterion.criterion.description,
+    embedding: criterion.criterion.embedding as number[],
+    // symptom: symptom.name,
+    // examinable: similarExaminable.examinable.name,
+  };
 }
 
-async function evaluateSymptomExaminableCriterion(
-  { model }: Models,
+export async function evaluateSymptomExaminableCriterion(
+  models: Models,
   exam: Exam,
   symptom: Symptom,
   examinable: Examinable,
   criterion: Criteria
-): Promise<Evaluation> {
+): Promise<EvaluationWithEmbedding> {
   logger.debug("Evaluating criterion", {
     symptomName: symptom.name,
     examinableName: examinable.name,
   });
 
   const result = await generateObject({
-    model,
+    model: models.language,
     schema: Evaluation,
     messages: [
       {
@@ -269,16 +319,30 @@ async function evaluateSymptomExaminableCriterion(
     examinableName: examinable.name,
     result: result.object.positive,
   });
-  return result.object;
+
+  const withEmbedding: EvaluationWithEmbedding = {
+    ...result.object,
+    embedding: await embed({
+      model: models.embedding,
+      value: `${symptom.name} (${
+        result.object.positive ? "positive" : "negative"
+      }, with confidence ${result.object.confidence}): ${examinable.name}: ${
+        criterion.name
+      }: ${result.object.explanation}`,
+    }).then(({ embedding }) => embedding),
+  };
+
+  return withEmbedding;
 }
 
-async function extractSymptomsFromExam(
+export async function extractSymptomsFromExam(
   models: Models,
+  graph: Graph,
   exam: Exam
 ): Promise<
   Array<{
-    symptom: Symptom;
-    evaluation: Evaluation;
+    symptom: SymptomWithEmbedding;
+    evaluation: EvaluationWithEmbedding;
   }>
 > {
   logger.debug("Processing exam for symptoms", {
@@ -287,6 +351,7 @@ async function extractSymptomsFromExam(
 
   const symptomsAndExaminable = await getCandidateSymptomsFromExam(
     models,
+    graph,
     exam
   );
   logger.debug("Found candidate symptoms and examinables", {
@@ -334,40 +399,92 @@ async function extractSymptomsFromExam(
     symptomCount: triplets.length,
     positiveEvaluations: evaluations.filter((e) => e.positive).length,
   });
+
   return triplets.map(({ symptom }, i) => ({
     symptom,
     evaluation: evaluations[i],
   }));
 }
 
-async function extractSymptomsFromExams(
+export async function extractSymptomsFromExams(
   models: Models,
+  graph: Graph,
   exams: Array<Exam>
 ): Promise<
   Array<{
+    exam: Exam;
     symptom: Symptom;
     evaluation: Evaluation;
   }>
 > {
-  const symptomsAndEvaluations = await Promise.all(
-    exams.map((e) => extractSymptomsFromExam(models, e))
-  );
-
-  return flatten(
-    symptomsAndEvaluations.map((x) =>
-      x
-        .filter((y) => y.evaluation.positive)
-        .map((y) => ({ symptom: y.symptom, evaluation: y.evaluation }))
+  const examEmbeddings = await Promise.all(
+    exams.map((exam) =>
+      embed({
+        model: models.embedding,
+        value: `${exam.name}: ${exam.description}`,
+      }).then(({ embedding }) => embedding)
     )
   );
+
+  const nSymptomsAndEvaluations = await Promise.all(
+    exams.map((exam) => extractSymptomsFromExam(models, graph, exam))
+  );
+
+  const triplets = flatten(
+    nSymptomsAndEvaluations.map((nSymptomAndEvaluation, i) =>
+      nSymptomAndEvaluation
+        .filter(({ evaluation }) => evaluation.positive)
+        .map(({ symptom, evaluation }) => ({
+          exam: exams[i],
+          symptom,
+          evaluation,
+        }))
+    )
+  );
+
+  for (let i = 0; i < triplets.length; i++) {
+    const { exam, symptom, evaluation } = triplets[i];
+
+    graph.addNode({
+      id: exam.name,
+      type: "Exam",
+      embedding: examEmbeddings[i],
+      exam,
+    });
+
+    graph.addNode({
+      id: symptom.name,
+      type: "Symptom",
+      embedding: symptom.embedding,
+      symptom,
+    });
+
+    graph.addEdge({
+      id: `${exam.name}-${symptom.name}`,
+      type: "Evaluation",
+
+      source: exam.name,
+      sourceEmbedding: examEmbeddings[i],
+
+      target: symptom.name,
+      targetEmbedding: symptom.embedding,
+
+      embedding: evaluation.embedding,
+      evaluation,
+    });
+  }
+
+  return triplets;
 }
 
-async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
+export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   logger.info("Building graph from snapshots", {
     snapshotCount: snapshots.length,
   });
 
   snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
+
+  const graph = new Graph();
 
   // Phase 1
   for (const snapshot of snapshots) {
@@ -379,11 +496,13 @@ async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
 
     const describedSymptoms = await extractSymptomsFromDescriptions(
       models,
+      graph,
       snapshot.descriptions
     );
 
     const detectedSymptoms = await extractSymptomsFromExams(
       models,
+      graph,
       snapshot.exams
     );
 
@@ -398,9 +517,14 @@ async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       totalSymptomCount: symptoms.length,
     });
   }
+
+  return {
+    graph,
+    symptoms,
+  };
 }
 
-function* rankCandidates(
+export function* rankCandidates(
   symptoms: Array<SymptomWithEmbedding>,
   target: SymptomWithEmbedding
 ) {
@@ -415,7 +539,7 @@ function* rankCandidates(
   yield* ranked;
 }
 
-function* getCandidates(
+export function* getCandidates(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>
 ) {
@@ -424,7 +548,7 @@ function* getCandidates(
   yield* product(...candidateGenerators);
 }
 
-function match(
+export function match(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>,
   threshold: number
@@ -439,14 +563,14 @@ function match(
   }
 }
 
-async function refine(
+export async function refine(
   symptoms: Array<SymptomWithEmbedding>
 ): Promise<Array<SymptomWithEmbedding>> {
   // TODO
   return symptoms;
 }
 
-async function search(
+export async function search(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>,
   maxIterations: number,
@@ -462,43 +586,3 @@ async function search(
     i++;
   }
 }
-
-async function main() {
-  logger.info("Starting symptom analysis");
-
-  const snapshots: Array<Snapshot> = [
-    {
-      t: new Date(),
-      descriptions: ["I have a runny nose"],
-      exams: [
-        {
-          t: new Date(),
-          description: "the patient has a high level of mucous",
-        },
-      ],
-    },
-  ];
-
-  try {
-    const graph = await buildGraph(
-      {
-        model: gpt4o,
-        embeddings: openaiEmbeddings,
-      },
-      snapshots
-    );
-    logger.info("Successfully built symptom graph");
-  } catch (error) {
-    logger.error("Failed to build symptom graph", {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
-  }
-}
-
-main().catch((error) => {
-  logger.error("Application failed", {
-    error: error instanceof Error ? error.message : String(error),
-  });
-  process.exit(1);
-});

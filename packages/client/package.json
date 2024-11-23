@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "@bananus/client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bananus/db": "workspace:*",
+    "better-auth": "^1.0.0",
+    "next": "15.0.3",
     "@hookform/resolvers": "^3.9.1",
     "@nextui-org/badge": "^2.0.32",
     "@nextui-org/button": "^2.0.38",
@@ -53,6 +56,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
+    "typescript": "^5",
     "postcss": "^8.4.49",
     "sass": "^1.81.0",
     "tailwindcss": "^3.4.15",
