@@ -7,6 +7,9 @@ import { EmbeddingModel } from "ai";
 
 export const sonnet = bedrock("anthropic.claude-3-sonnet-20240229-v1:0");
 
-export const cohereEmbeddings: EmbeddingModel<string> = bedrock.embedding(
-  "cohere.embed-english-v3"
+export const titanEmbeddings: EmbeddingModel<string> = bedrock.embedding(
+  "amazon.titan-embed-text-v2:0",
+  {
+    dimensions: 1024,
+  }
 );

@@ -27,7 +27,7 @@ import {
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
-import { cohereEmbeddings, sonnet } from "./models";
+import { titanEmbeddings, sonnet } from "./models";
 
 interface Models {
   model: LanguageModel;
@@ -483,7 +483,7 @@ async function main() {
     const graph = await buildGraph(
       {
         model: sonnet,
-        embeddings: cohereEmbeddings,
+        embeddings: titanEmbeddings,
       },
       snapshots
     );
