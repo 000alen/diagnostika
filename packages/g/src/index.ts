@@ -26,7 +26,6 @@ import {
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
-import { titanEmbeddings, sonnet } from "./models";
 import {
   db,
   symptoms,
@@ -41,6 +40,10 @@ import {
   eq,
 } from "@bananus/db";
 
+export * from "./models";
+export * from "./utils";
+export * from "./types";
+
 interface Models {
   model: LanguageModel;
   embeddings: EmbeddingModel<string>;
@@ -51,7 +54,7 @@ const SIMILARITY_THRESHOLDS = {
   RELATED_SYMPTOMS: 0.5, // Used in getRelatedSymptomsFromExaminable
 } as const;
 
-async function extractSymptomsFromDescription(
+export async function extractSymptomsFromDescription(
   { model, embeddings }: Models,
   description: string
 ): Promise<Array<SymptomWithEmbedding>> {
@@ -98,7 +101,7 @@ async function extractSymptomsFromDescription(
   return withEmbeddings;
 }
 
-async function extractSymptomsFromDescriptions(
+export async function extractSymptomsFromDescriptions(
   models: Models,
   descriptions: string[]
 ) {
@@ -109,7 +112,7 @@ async function extractSymptomsFromDescriptions(
   return flatten(nSymptoms);
 }
 
-async function extractExaminablesFromExam(
+export async function extractExaminablesFromExam(
   { model, embeddings }: Models,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
@@ -156,7 +159,7 @@ async function extractExaminablesFromExam(
   return withEmbeddings;
 }
 
-async function getRelatedSymptomsFromExaminable(
+export async function getRelatedSymptomsFromExaminable(
   examinable: ExaminableWithEmbedding
 ): Promise<Array<SymptomWithEmbedding>> {
   logger.debug("Finding related symptoms for examinable", {
@@ -193,7 +196,7 @@ async function getRelatedSymptomsFromExaminable(
   }));
 }
 
-async function getCandidateSymptomsFromExam(
+export async function getCandidateSymptomsFromExam(
   models: Models,
   exam: Exam
 ): Promise<
@@ -220,7 +223,7 @@ async function getCandidateSymptomsFromExam(
   );
 }
 
-async function getSymptomExaminableCriterion(
+export async function getSymptomExaminableCriterion(
   symptom: SymptomWithEmbedding,
   examinable: ExaminableWithEmbedding
 ): Promise<CriteriaWithEmbedding> {
@@ -278,7 +281,7 @@ async function getSymptomExaminableCriterion(
   };
 }
 
-async function evaluateSymptomExaminableCriterion(
+export async function evaluateSymptomExaminableCriterion(
   { model }: Models,
   exam: Exam,
   symptom: Symptom,
@@ -313,7 +316,7 @@ async function evaluateSymptomExaminableCriterion(
   return result.object;
 }
 
-async function extractSymptomsFromExam(
+export async function extractSymptomsFromExam(
   models: Models,
   exam: Exam
 ): Promise<
@@ -381,7 +384,7 @@ async function extractSymptomsFromExam(
   }));
 }
 
-async function extractSymptomsFromExams(
+export async function extractSymptomsFromExams(
   models: Models,
   exams: Array<Exam>
 ): Promise<
@@ -403,7 +406,7 @@ async function extractSymptomsFromExams(
   );
 }
 
-async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
+export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   logger.info("Building graph from snapshots", {
     snapshotCount: snapshots.length,
   });
@@ -441,7 +444,7 @@ async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   }
 }
 
-function* rankCandidates(
+export function* rankCandidates(
   symptoms: Array<SymptomWithEmbedding>,
   target: SymptomWithEmbedding
 ) {
@@ -456,7 +459,7 @@ function* rankCandidates(
   yield* ranked;
 }
 
-function* getCandidates(
+export function* getCandidates(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>
 ) {
@@ -465,7 +468,7 @@ function* getCandidates(
   yield* product(...candidateGenerators);
 }
 
-function match(
+export function match(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>,
   threshold: number
@@ -480,14 +483,14 @@ function match(
   }
 }
 
-async function refine(
+export async function refine(
   symptoms: Array<SymptomWithEmbedding>
 ): Promise<Array<SymptomWithEmbedding>> {
   // TODO
   return symptoms;
 }
 
-async function search(
+export async function search(
   symptoms: Array<SymptomWithEmbedding>,
   query: Array<SymptomWithEmbedding>,
   maxIterations: number,
@@ -503,43 +506,3 @@ async function search(
     i++;
   }
 }
-
-async function main() {
-  logger.info("Starting symptom analysis");
-
-  const snapshots: Array<Snapshot> = [
-    {
-      t: new Date(),
-      descriptions: ["I have a runny nose"],
-      exams: [
-        {
-          t: new Date(),
-          description: "the patient has a high level of mucous",
-        },
-      ],
-    },
-  ];
-
-  try {
-    const graph = await buildGraph(
-      {
-        model: sonnet,
-        embeddings: titanEmbeddings,
-      },
-      snapshots
-    );
-    logger.info("Successfully built symptom graph");
-  } catch (error) {
-    logger.error("Failed to build symptom graph", {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
-  }
-}
-
-main().catch((error) => {
-  logger.error("Application failed", {
-    error: error instanceof Error ? error.message : String(error),
-  });
-  process.exit(1);
-});
