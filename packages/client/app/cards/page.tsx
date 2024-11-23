@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from '@nextui-org/button'; 
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 //
-import avatar from "../assets/avatar.png";
+import avatar from "@client/assets/avatar.png";
 import layout from "./page.module.scss";
 
 const CardsPage = () => {

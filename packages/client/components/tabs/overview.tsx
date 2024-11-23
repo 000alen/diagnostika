@@ -8,7 +8,7 @@ import layout from "./overview.module.scss";
 
 const OverviewTab = () => {
   return (
-    <ResizablePanelGroup direction="horizontal">
+    <ResizablePanelGroup direction="horizontal" className="pl-5 pr-5">
       <ResizablePanel>
         <div>
           <h1 className="text-4xl font-bold mb-3">Vista General</h1>
