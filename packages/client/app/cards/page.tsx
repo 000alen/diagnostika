@@ -2,6 +2,7 @@
 //
 import Image from "next/image";
 import { Button } from '@nextui-org/button'; 
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 //
 import avatar from "../assets/avatar.png";
 import layout from "./page.module.scss";
@@ -20,9 +21,11 @@ const CardsPage = () => {
           </h1>
           <div>
             <Button size="lg">
+              <ThumbsUp className="mr-1 h-6 w-6" />
               Sí
             </Button>
             <Button size="lg">
+              <ThumbsDown className="mr-1 h-6 w-6" />
               No
             </Button>
           </div>
