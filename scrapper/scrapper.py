@@ -120,7 +120,7 @@ for li in li_tags:
                         factores_riesgo_ = limpiar_texto(factores_riesgo_)
                         datos_existentes.append([{"titulo": titulo_, "overview": overview_, "sintomas": sintomas_, "risk_factors": factores_riesgo_}])
 
-                        with open("secciones.json", "w") as file:
+                        with open("scrapper.json", "w") as file:
                             json.dump(datos_existentes, file, indent=4)
                         
                     else:
