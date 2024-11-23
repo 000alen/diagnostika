@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@nextui-org/button";
 import { Badge } from "@nextui-org/badge";
-import { Bell, FileTextIcon, Search } from 'lucide-react';
+import { Bell, FileTextIcon, Search, MoveUpRight } from 'lucide-react';
 //
 import { BentoCard, BentoGrid } from "../components/bento";
 import { Marquee } from "../components/marquee";
@@ -40,7 +40,7 @@ const files = [
 const features = [
   {
     Icon: FileTextIcon,
-    name: "Save your files",
+    name: "1",
     description: "We automatically save your files as you type.",
     href: "#",
     cta: "Learn more",
@@ -75,7 +75,7 @@ const features = [
   },
   {
     Icon: FileTextIcon,
-    name: "Save your files",
+    name: "Dos",
     description: "We automatically save your files as you type.",
     href: "#",
     cta: "Learn more",
@@ -110,7 +110,7 @@ const features = [
   },
   {
     Icon: FileTextIcon,
-    name: "Save your files",
+    name: "Uno",
     description: "We automatically save your files as you type.",
     href: "#",
     cta: "Learn more",
@@ -193,20 +193,24 @@ const ReviewerDashboard = () => {
         {/* El div de la derecha RGB(0, 98, 241)*/}
 
         <div>
-          <div className="flex items-center">
-          <div className="m-2 bg-white rounded-full p-5 flex items-center">
-            <p className="text-xl font-bold p-2">Search reviews</p>
-            <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full">
+          <div className="flex items-center mb-12">
+          <div className="m-2 bg-white rounded-full p-4 flex items-center" style={{ flex: 3}}>
+            <p className="text-xl font-bold p-2">Diagnostics</p>
+            <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full w-full">
               <Search/>
-              <input className="bg-slate-100 w-[14vw]" type="text" name="" placeholder="Search..."/>
+              <input
+                className="bg-slate-100 w-full px-4 py-2 rounded-lg text-gray-600 focus:outline-none"
+                type="text"
+                name="search-diagnostics"
+                placeholder="Search..."
+              />
             </div>
-          </div>          
-          <Button style={{backgroundColor: "rgb(0, 98, 241"}} className="text-white rounded-full p-8 font-bold"> Consultation </Button>
+          </div>
+          <Button style={{flex: 1, backgroundColor: "rgb(0, 98, 241"}} className="text-white rounded-full p-8 font-bold w-35">
+            Consultation
+            <MoveUpRight/>
+          </Button>
         </div>
-
-
-
-        
         <BentoGrid className="w-full ">
         {features.map((feature) => (
           <BentoCard key={feature.name} {...feature} />
