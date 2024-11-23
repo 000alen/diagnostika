@@ -1,0 +1,65 @@
+//
+.main {
+  width: 100dvw;
+  height: 100dvh;
+  background-color: #f6f6f6;
+  color: #1e1e1e;
+
+  header {
+    height: 90px;
+    width: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 1.5rem;
+    box-sizing: border-box;
+
+    div {
+      &:first-child {
+        h1 {
+          font-size: 1.25rem;
+          font-weight: 700;
+        }
+      }
+
+      &:nth-child(2) {
+        button {
+          background-color: #ededed;
+          color: gray;
+          font-weight: 500;
+          margin-right: .25rem;
+          padding: 1.75rem 1.25rem;
+
+          &:first-child {
+            background-color: white;
+            color: #1e1e1e;
+            font-weight: 600;
+          }
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
+      &:last-child {
+        display: flex;
+        align-items: center;
+
+        button {
+          background-color: white;
+          height: 60px;
+          width: 60px;
+        }
+
+        img {
+          border-radius: 50%;
+          height: 100%;
+          margin-left: .75rem;
+        }
+      }
+    }
+  }
+}
+
