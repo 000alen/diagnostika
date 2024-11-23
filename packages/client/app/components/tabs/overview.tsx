@@ -4,13 +4,13 @@ import { Button } from "@nextui-org/button";
 import { FileTextIcon, Search, MoveUpRight } from 'lucide-react';
 //
 import { BentoCard, BentoGrid } from "../ui/bento";
+import PatientInfoGraph from "../ui/patient-info-graph";
 import { Marquee } from "../ui/marquee";
 import { cn } from "../../lib/utils";
 
 // Charts
 import React, { useCallback } from 'react';
 import {
-  ReactFlow,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -169,17 +169,10 @@ const OverviewTab = () => {
     <section className="grid grid-cols-2 gap-10">
       <div className=""> 
         <div className="m-4">
-          <h1 className="text-4xl font-bold"> Overview </h1>
-          <h2 className="text-3xl"> Marcelo Lemus </h2>
-
-          <div className="w-full h-screen shadow-md bg-white m-5 rounded-3xl mt-14">
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-            />
+          <h1 className="text-4xl font-bold mb-3">Vista General</h1>
+          <h2 className="text-5xl">Marcelo Lemus</h2>
+          <div className="w-full h-screen bg-white m-5 rounded-3xl mt-9">
+            {/* <PatientInfoGraph/> */}
           </div>
         </div>
       </div>
@@ -187,14 +180,14 @@ const OverviewTab = () => {
       <div>
         <div className="flex items-center mb-12">
           <div className="m-2 bg-white rounded-full p-4 flex items-center" style={{ flex: 3}}>
-            <p className="text-xl font-bold p-2">Diagnostics</p>
+            <p className="text-xl font-bold p-2 mr-4">Diagnósticos</p>
             <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full w-full">
-              <Search/>
+              <Search className="ml-2"/>
               <input
                 className="bg-slate-100 w-full px-4 py-2 rounded-lg text-gray-600 focus:outline-none"
                 type="text"
                 name="search-diagnostics"
-                placeholder="Search..."
+                placeholder="Buscar ..."
               />
             </div>
           </div>
