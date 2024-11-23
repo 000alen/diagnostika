@@ -20,7 +20,7 @@ import {
   Symptom,
   SymptomWithEmbedding,
 } from "./types";
-import { flatten } from "./utils";
+import { flatten, product } from "./utils";
 import { CRITERION, EXAMINABLES, ready, SYMPTOMS } from "./db";
 import {
   PROMPT_EVALUATE_SYMPTOM,
@@ -343,14 +343,21 @@ async function extractSymptomsFromExam(
 async function extractSymptomsFromExams(
   models: Models,
   exams: Array<Exam>
-): Promise<Array<Symptom>> {
+): Promise<
+  Array<{
+    symptom: Symptom;
+    evaluation: Evaluation;
+  }>
+> {
   const symptomsAndEvaluations = await Promise.all(
     exams.map((e) => extractSymptomsFromExam(models, e))
   );
 
   return flatten(
     symptomsAndEvaluations.map((x) =>
-      x.filter((y) => y.evaluation.positive).map((y) => y.symptom)
+      x
+        .filter((y) => y.evaluation.positive)
+        .map((y) => ({ symptom: y.symptom, evaluation: y.evaluation }))
     )
   );
 }
@@ -380,13 +387,79 @@ async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       snapshot.exams
     );
 
-    const symptoms = [...describedSymptoms, ...detectedSymptoms];
+    const symptoms = [
+      ...describedSymptoms,
+      ...detectedSymptoms.map((x) => x.symptom),
+    ];
 
     logger.info("Processed snapshot symptoms", {
       describedSymptomCount: describedSymptoms.length,
       detectedSymptomCount: detectedSymptoms.length,
       totalSymptomCount: symptoms.length,
     });
+  }
+}
+
+function* rankCandidates(
+  symptoms: Array<SymptomWithEmbedding>,
+  target: SymptomWithEmbedding
+) {
+  const similarities = symptoms.map((s) =>
+    cosineSimilarity(target.embedding, s.embedding)
+  );
+
+  const ranked = symptoms
+    .map((s, i) => ({ symptom: s, similarity: similarities[i] }))
+    .sort((a, b) => b.similarity - a.similarity);
+
+  yield* ranked;
+}
+
+function* getCandidates(
+  symptoms: Array<SymptomWithEmbedding>,
+  query: Array<SymptomWithEmbedding>
+) {
+  const candidateGenerators = query.map((q) => rankCandidates(symptoms, q));
+
+  yield* product(...candidateGenerators);
+}
+
+function match(
+  symptoms: Array<SymptomWithEmbedding>,
+  query: Array<SymptomWithEmbedding>,
+  threshold: number
+) {
+  for (const candidate of getCandidates(symptoms, query)) {
+    const meanSimilarity =
+      candidate.reduce((acc, { similarity }) => acc + similarity, 0) /
+      candidate.length;
+
+    if (meanSimilarity >= threshold)
+      return candidate.map(({ symptom }) => symptom);
+  }
+}
+
+async function refine(
+  symptoms: Array<SymptomWithEmbedding>
+): Promise<Array<SymptomWithEmbedding>> {
+  // TODO
+  return symptoms;
+}
+
+async function search(
+  symptoms: Array<SymptomWithEmbedding>,
+  query: Array<SymptomWithEmbedding>,
+  maxIterations: number,
+  threshold: number
+) {
+  let i = 0;
+
+  while (i < maxIterations) {
+    const result = match(symptoms, query, threshold);
+    if (result) return result;
+
+    symptoms = await refine(symptoms);
+    i++;
   }
 }
 
