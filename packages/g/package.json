@@ -1,8 +1,9 @@
 {
-  "name": "g",
+  "name": "@bananus/g",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,6 +19,7 @@
     "@ai-sdk/amazon-bedrock": "^1.0.3",
     "@ai-sdk/openai": "^1.0.4",
     "ai": "^4.0.3",
+    "@bananus/db": "workspace:*",
     "dotenv": "^16.4.5",
     "winston": "^3.17.0",
     "zod": "^3.23.8"

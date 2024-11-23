@@ -1,23 +1,28 @@
 {
-  "name": "db",
+  "name": "@bananus/db",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.28.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "better-auth": "^1.0.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.4",
+    "kysely": "^0.27.4",
     "pg": "^8.13.1"
   }
 }

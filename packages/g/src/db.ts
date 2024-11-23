@@ -1,6 +1,6 @@
 import { embed } from "ai";
 import { Criteria, Examinable, SymptomWithEmbedding } from "./types";
-import { openaiEmbeddings } from "./models";
+import { cohereEmbeddings } from "./models";
 
 const _RUNNY_NOSE = "Runny nose";
 
@@ -13,7 +13,7 @@ async function seed() {
       },
     ].map(async (symptom) => {
       const { embedding } = await embed({
-        model: openaiEmbeddings,
+        model: cohereEmbeddings,
         value: `${symptom.name}: ${symptom.description}`,
       });
 
@@ -37,7 +37,7 @@ async function seed() {
       };
 
       const { embedding } = await embed({
-        model: openaiEmbeddings,
+        model: cohereEmbeddings,
         value: `${examinable.name}: ${examinable.description}`,
       });
 
@@ -59,7 +59,7 @@ async function seed() {
       const examinable = EXAMINABLES[i];
 
       const { embedding } = await embed({
-        model: openaiEmbeddings,
+        model: cohereEmbeddings,
         value: `${criteria.name}: ${criteria.criteria}`,
       });
 

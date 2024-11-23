@@ -27,7 +27,7 @@ import {
   PROMPT_EXTRACT_EXAMINABLES,
   PROMPT_EXTRACT_SYMPTOMS,
 } from "./prompts";
-import { gpt4o, openaiEmbeddings } from "./models";
+import { cohereEmbeddings, sonnet } from "./models";
 
 interface Models {
   model: LanguageModel;
@@ -482,8 +482,8 @@ async function main() {
   try {
     const graph = await buildGraph(
       {
-        model: gpt4o,
-        embeddings: openaiEmbeddings,
+        model: sonnet,
+        embeddings: cohereEmbeddings,
       },
       snapshots
     );
