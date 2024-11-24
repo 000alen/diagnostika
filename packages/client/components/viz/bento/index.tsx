@@ -30,22 +30,12 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
           symptoms.map((symptom, index) => (
             <>
               <div key={index} className={`${layout.gridCardTypeD} flex flex-col items-center justify-items-center`}>
-                <span className="font-bold mt-4 text-left w-[100%]">
+                <span className="font-bold mt-4 text-left w-[100%] font-sm">
                   {symptom.name}
                 </span>
-                <p>
+                <p className="font-sm">
                   {symptom.description}
                 </p>
-              </div>
-              <div className={layout.gridCardTypeC}>
-                <Button size="lg" radius="full" isIconOnly>
-                  <ArrowIcon />
-                </Button>
-                <span>
-                  Cantidad <br />
-                  de síntomas
-                </span>
-                <p>{symptomsLength}</p>
               </div>
             </>
           ))
@@ -59,24 +49,6 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
             </p>
           </div>
         )}
-        {/* <div className={`${layout.gridCardTypeD} flex flex-col items-center justify-items-center`}>
-          <span className="font-bold mt-4 text-left w-[100%]">
-            {symptoms[0].name}
-          </span>
-          <p>
-            {symptoms[0].description}
-          </p>
-        </div>
-        {symptomsList.length > 1 && (
-          <div className={layout.gridCardTypeD}>
-            <span className="font-bold mt-4 text-left w-[100%]">
-              {symptoms[1].name}
-            </span>
-            <p>
-              {symptoms[1].description}
-            </p>
-          </div>
-        )} */}
         <div className={layout.gridCardTypeC}>
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
@@ -99,13 +71,13 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
             <span>{symptoms!.length ?? 0}</span>
           </div>
           <div className={layout.biometric}>
-            <p>Temperatura</p>
-            <span>34.7°C</span>
+            <p>Diagnosis</p>
+            <span>Pendiente</span>
           </div>
-          <div className={layout.biometric}>
+          {/* <div className={layout.biometric}>
             <p>SpO2</p>
             <span>96%</span>
-          </div>
+          </div> */}
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
           </Button>
@@ -113,9 +85,9 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
         <div className={layout.gridCardTypeB}>
           <div>
             <div className="flex items-center w-fit px-3 py-1 mb-1 rounded-full backdrop-filter backdrop-blur-sm bg-white/15 text-sm font-light select-none border-1 border-[#8D959D] tracking-wider">
-              87% probable
+              En progreso
             </div>
-            <span>Osteoporosis</span>
+            <span>Diagnosis</span>
           </div>
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
