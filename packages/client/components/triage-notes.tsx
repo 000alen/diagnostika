@@ -97,6 +97,14 @@ export default function TriageNotes() {
           </CardTitle>
           <div className="flex gap-2">
             <Button
+              variant="secondary"
+              className="w-fit rounded-[14px] font-semibold"
+              disabled={isTranscribing || !patientId}
+              onClick={onSave}
+            >
+              Guardar
+            </Button>
+            <Button
               variant={isRecording ? "destructive" : "default"}
               onClick={
                 isRecording
@@ -119,14 +127,6 @@ export default function TriageNotes() {
                   Grabar
                 </>
               )}
-            </Button>
-            <Button
-              variant="secondary"
-              className="w-fit rounded-[14px] font-semibold"
-              disabled={isTranscribing || !patientId}
-              onClick={onSave}
-            >
-              Guardar
             </Button>
           </div>
         </div>
