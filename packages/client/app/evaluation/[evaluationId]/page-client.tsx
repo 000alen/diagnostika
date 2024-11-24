@@ -25,8 +25,8 @@ export default function Page({ evaluationId }: { evaluationId: string }) {
 
   const tabs = [
     { name: "Vista general", content: <OverviewTab setActiveTab={setActiveTab} /> },
-    { name: "Diagnósticos", content: <PatientsTab /> },
-    { name: "Pacientes", content: <DiagnosticsTab /> },
+    { name: "Diagnósticos", content: <DiagnosticsTab /> },
+    { name: "Pacientes", content: <PatientsTab /> },
     { name: "Mi configuración", content: <SettingsTab /> }
   ];
 
