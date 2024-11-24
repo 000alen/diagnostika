@@ -16,9 +16,11 @@ export default function TriageNotes() {
   const { patientId } = useContext(TriageContext)!;
 
   const [text, setText] = useState("");
-  const [transcript, setTranscript] = useState("")
-  const [showRedirectButton, setShowRedirectButton] = useState(false)
+  const [transcript, setTranscript] = useState("");
   const [isTranscribing, setIsTranscribing] = useState(false);
+
+  const [examName, setExamName] = useState("");
+  const [examDescription, setExamDescription] = useState("");
 
   const {
     startRecording,
@@ -28,10 +30,6 @@ export default function TriageNotes() {
     isPaused,
     mediaRecorder,
   } = useAudioRecorder({});
-
-  const redirectToPatientData = () => {
-    window.open("https://ejemplo-historial-medico.com/paciente/123", "_blank")
-  }
 
   const onStopRecording = useCallback(async () => {
     stopRecording();
@@ -73,6 +71,8 @@ export default function TriageNotes() {
   const { mutateAsync: createSnapshot } = trpc.createSnapshot.useMutation();
   const { mutateAsync: addToSnapshot } = trpc.addToSnapshot.useMutation();
   const { mutateAsync: buildGraph } = trpc.buildGraph.useMutation();
+  const { mutateAsync: addExamToSnapshot } =
+    trpc.addExamToSnapshot.useMutation();
 
   const onSave = useCallback(async () => {
     await createSnapshot({ patientId: patientId! });
@@ -85,13 +85,26 @@ export default function TriageNotes() {
     await buildGraph({ patientId: patientId! });
   }, [addToSnapshot, buildGraph, createSnapshot, patientId, text]);
 
+  const onSaveExam = useCallback(async () => {
+    await addExamToSnapshot({
+      patientId: patientId!,
+      exam: {
+        t: new Date(),
+        name: examName,
+        description: examDescription,
+      },
+    });
+
+    await buildGraph({ patientId: patientId! });
+  }, [addExamToSnapshot, buildGraph, examDescription, examName, patientId]);
+
   return (
     <Card className="w-[50vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="flex text-[1.1rem] flex-col">
             <span>Notas del Paciente</span>
-            <p className="font-normal text-sm text-gray-700">
+            <p className="text-sm font-normal text-gray-700">
               Transforma las notas de voz en texto
             </p>
           </CardTitle>
@@ -158,37 +171,29 @@ export default function TriageNotes() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex text-[1.1rem] flex-col">
             <span>Examen</span>
-            <p className="font-normal text-sm text-gray-700">
-              Escriba una transcripción de su examen para tener información adicional
+            <p className="text-sm font-normal text-gray-700">
+              Escriba una transcripción de su examen para tener información
+              adicional
             </p>
           </CardTitle>
           <div className="flex gap-2">
-            {showRedirectButton && (
-              <Button
-                variant="outline"
-                className="bg-green-500 text-white hover:bg-green-600"
-                onClick={redirectToPatientData}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Ver Historial Médico
-              </Button>
-            )}
-            <Button
-              className="w-32 bg-blue-700"
-            >
-                <>
-                  <File className="h-4 w-4 mr-2" />
-                  Enviar
-                </>
+            <Button className="w-32 bg-blue-700" onClick={onSaveExam}>
+              <File className="w-4 h-4 mr-2" />
+              Enviar
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
-        <InputNextUI type="text" label="Titulo"></InputNextUI>
+        <InputNextUI
+          type="text"
+          label="Titulo"
+          value={examName}
+          onChange={(e) => setExamName(e.target.value)}
+        ></InputNextUI>
         <Textarea
-          value={transcript}
-          onChange={(e) => setTranscript(e.target.value)}
+          value={examDescription}
+          onChange={(e) => setExamDescription(e.target.value)}
           className="h-fit min-h-[200px] max-h-[200px] outline-none border-none shadow-none"
           placeholder="Examenes de sangre, biopsa..."
           style={{ resize: "none" }}
