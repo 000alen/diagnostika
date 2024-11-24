@@ -17,6 +17,7 @@ import { Chip, ChipProps } from "@nextui-org/chip";
 import layout from "@/components/tabs/patients.module.scss";
 import { useRouter } from "next/navigation";
 import { trpc } from "@client/lib/trpc-client";
+import { toast } from "sonner";
 
 const columns = [
   { name: "NAME", uid: "name" },
@@ -84,7 +85,11 @@ export default function Page({ graphs }: PageProps) {
                 onClick={async () => {
                   const diagnosis = await diagnose({ graphId: row.id });
 
-                  console.log(diagnosis);
+                  if (diagnosis) {
+                    toast.info("Diagnóstico realizado con éxito");
+                  } else {
+                    toast.error("No se encontró un diagnóstico");
+                  }
                 }}
               >
                 Diagnose
