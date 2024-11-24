@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useContext, useCallback } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, ExternalLink, File } from "lucide-react";
+import { Input as InputNextUI } from "@nextui-org/input";
+//
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +16,8 @@ export default function TriageNotes() {
   const { patientId } = useContext(TriageContext)!;
 
   const [text, setText] = useState("");
+  const [transcript, setTranscript] = useState("")
+  const [showRedirectButton, setShowRedirectButton] = useState(false)
   const [isTranscribing, setIsTranscribing] = useState(false);
 
   const {
@@ -24,6 +28,10 @@ export default function TriageNotes() {
     isPaused,
     mediaRecorder,
   } = useAudioRecorder({});
+
+  const redirectToPatientData = () => {
+    window.open("https://ejemplo-historial-medico.com/paciente/123", "_blank")
+  }
 
   const onStopRecording = useCallback(async () => {
     stopRecording();
@@ -78,10 +86,15 @@ export default function TriageNotes() {
   }, [addToSnapshot, buildGraph, createSnapshot, patientId, text]);
 
   return (
-    <Card className="w-[50vw]">
-      <CardHeader>
+    <Card className="w-[50vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-2xl">Notas del Paciente</CardTitle>
+          <CardTitle className="flex text-[1.1rem] flex-col">
+            <span>Notas del Paciente</span>
+            <p className="font-normal text-sm text-gray-700">
+              Transforma las notas de voz en texto
+            </p>
+          </CardTitle>
           <div className="flex gap-2">
             <Button
               variant={isRecording ? "destructive" : "default"}
@@ -92,7 +105,7 @@ export default function TriageNotes() {
                   ? togglePauseResume
                   : startRecording
               }
-              className="w-32"
+              className="w-32 bg-blue-700"
               disabled={isTranscribing}
             >
               {isRecording ? (
@@ -118,7 +131,7 @@ export default function TriageNotes() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
         {isRecording && (
           <Alert className="border-red-200 bg-red-50">
             <div className="flex items-center gap-2">
@@ -134,8 +147,51 @@ export default function TriageNotes() {
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="min-h-[200px] mb-4"
+          className="min-h-[150px] outline-none border-none shadow-none"
           placeholder="Las notas de voz aparecerán aquí..."
+          style={{ resize: "none" }}
+        />
+      </CardContent>
+
+      {/* Card header de Enviar */}
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex text-[1.1rem] flex-col">
+            <span>Examen</span>
+            <p className="font-normal text-sm text-gray-700">
+              Escriba una transcripción de su examen para tener información adicional
+            </p>
+          </CardTitle>
+          <div className="flex gap-2">
+            {showRedirectButton && (
+              <Button
+                variant="outline"
+                className="bg-green-500 text-white hover:bg-green-600"
+                onClick={redirectToPatientData}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Ver Historial Médico
+              </Button>
+            )}
+            <Button
+              className="w-32 bg-blue-700"
+            >
+                <>
+                  <File className="h-4 w-4 mr-2" />
+                  Enviar
+                </>
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
+        <InputNextUI type="text" label="Titulo"></InputNextUI>
+        <Textarea
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
+          className="h-fit min-h-[200px] max-h-[200px] outline-none border-none shadow-none"
+          placeholder="Examenes de sangre, biopsa..."
+          style={{ resize: "none" }}
         />
       </CardContent>
     </Card>

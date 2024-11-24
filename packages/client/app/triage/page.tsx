@@ -21,9 +21,8 @@ export default function TriageBoard() {
         setPatientId,
       }}
     >
-      <div className="min-h-screen p-4 bg-gray-100">
+      <div className="h-[100dvh] flex items-center justify-items-center bg-gradient-to-b from-[#f5f5f5] to-[#f0f9ff]">
         <div className="max-w-[1600px] mx-auto">
-          <h1 className="mb-6 text-4xl font-bold">Panel de Triaje</h1>
           <div className="flex gap-8 justify-center h-[calc(100vh-8rem)]">
             <TriageRegistration />
             <TriageNotes />

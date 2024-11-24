@@ -61,19 +61,21 @@ export default function TriageQueue() {
   const { mutateAsync: removeFromQueue } = trpc.removeFromQueue.useMutation();
 
   return (
-    <Card className="w-[22vw]">
+    <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between text-xl">
-          <div className="flex items-center">
-            <Users className="w-5 h-5 mr-2" />
+        <CardTitle className="flex text-[1.1rem] flex-col">
+          <span>
             Lista de Espera
-          </div>
-          <span className="bg-gray-200 text-black px-2 py-0.5 rounded-full text-xs">
-            <p className="p-2"> {queue.length} pacientes </p>
           </span>
+          <p className="font-normal text-sm text-gray-700">
+            Pacientes en espera de atención
+          </p>
+          {/* <span className="bg-gray-200 text-black px-2 py-0.5 rounded-full text-xs">
+            <p className="p-2"> {queue.length} pacientes </p>
+          </span> */}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4 rounded-[20px] bg-white p-2 m-2 h-[86%]">
         <div className="space-y-3">
           {queue.map((patient) => (
             <div

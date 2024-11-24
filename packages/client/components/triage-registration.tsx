@@ -49,14 +49,18 @@ export default function TriageRegistration() {
   };
 
   return (
-    <Card className="w-[22vw]">
+    <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center text-xl">
-          <User className="w-5 h-5 mr-2" />
-          Registro de Paciente
+        <CardTitle className="flex text-[1.1rem] flex-col">
+          <span>
+            Registro de Paciente
+          </span>
+          <p className="font-normal text-sm text-gray-700">
+            Registra un nuevo paciente en la base de datos
+          </p>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-white p-4 m-2 rounded-[20px] h-fit">
         <Form action={action} className="space-y-3">
           <div className="space-y-1">
             <Label htmlFor="rut">RUT</Label>
@@ -106,7 +110,7 @@ export default function TriageRegistration() {
             <Input id="emergency-contact" placeholder="+56 9 1234 5678" />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 pb-10">
             <Label htmlFor="priority">Prioridad de Atención</Label>
             <Select name="priority" defaultValue="3">
               <SelectTrigger>
@@ -147,7 +151,7 @@ export default function TriageRegistration() {
             </Select>
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full bg-blue-700">
             Registrar Paciente
           </Button>
         </Form>
