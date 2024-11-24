@@ -9,9 +9,11 @@ interface PageProps {
   evaluationId: string;
   graph: unknown;
   symptoms: unknown;
+  patientId: number;
+  patientName: string;
 }
 
-export default function Page({}: PageProps) {
+export default function Page({ patientName }: PageProps) {
   return (
     <div
       className={layout.container}
@@ -23,7 +25,7 @@ export default function Page({}: PageProps) {
       <div className={layout.leftPanel}>
         <div className={layout.content} style={{ marginBottom: 24 }}>
           <h1 className="mb-1 text-4xl font-bold">Reporte</h1>
-          <h2 className="text-5xl">Marcelo Lemus</h2>
+          <h2 className="text-5xl">{patientName}</h2>
         </div>
         <div
           className="w-screen h-screen"

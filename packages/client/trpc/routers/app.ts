@@ -207,10 +207,15 @@ export const appRouter = router({
     .input(
       z.object({
         patientId: z.number(),
-        snapshotId: z.number(),
+        snapshotId: z.number().optional(),
       })
     )
     .mutation(async ({ input: { patientId, snapshotId } }) => {
+      if (!snapshotId) {
+        const snapshot = await getLatestSnapshot(patientId);
+        snapshotId = snapshot.id;
+      }
+
       const snapshot = await getFullSnapshot(patientId, snapshotId);
       const { symptoms, graph } = await buildGraph(models, [snapshot]);
 

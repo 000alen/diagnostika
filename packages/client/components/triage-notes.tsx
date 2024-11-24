@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TriageContext } from "@/app/triage/page";
 import useAudioRecorder from "@/hooks/useAudioRecorder";
+import { trpc } from "@client/lib/trpc-client";
 
 export default function TriageNotes() {
   const { patientId } = useContext(TriageContext)!;
@@ -61,6 +62,21 @@ export default function TriageNotes() {
     mediaRecorder!.requestData();
   }, [mediaRecorder, patientId, stopRecording]);
 
+  const { mutateAsync: createSnapshot } = trpc.createSnapshot.useMutation();
+  const { mutateAsync: addToSnapshot } = trpc.addToSnapshot.useMutation();
+  const { mutateAsync: buildGraph } = trpc.buildGraph.useMutation();
+
+  const onSave = useCallback(async () => {
+    await createSnapshot({ patientId: patientId! });
+
+    await addToSnapshot({
+      patientId: patientId!,
+      description: text,
+    });
+
+    await buildGraph({ patientId: patientId! });
+  }, [addToSnapshot, buildGraph, createSnapshot, patientId, text]);
+
   return (
     <Card className="w-[50vw]">
       <CardHeader>
@@ -92,9 +108,10 @@ export default function TriageNotes() {
               )}
             </Button>
             <Button
-              variant={"default"}
+              variant="secondary"
               className="w-32"
-              disabled={isTranscribing}
+              disabled={isTranscribing || !patientId}
+              onClick={onSave}
             >
               Guardar
             </Button>
