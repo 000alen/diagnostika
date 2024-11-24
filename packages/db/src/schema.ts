@@ -7,10 +7,9 @@ import {
   vector,
   index,
   primaryKey,
+  jsonb,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
-// Base tables
 export const diseases = pgTable(
   "diseases",
   {
@@ -83,7 +82,6 @@ export const criteria = pgTable(
   })
 );
 
-// Linking tables
 export const diseaseSymptoms = pgTable(
   "disease_symptoms",
   {
@@ -133,92 +131,36 @@ export const examinableCriteria = pgTable(
   })
 );
 
-// Relations
-export const diseasesRelations = relations(diseases, ({ many }) => ({
-  diseaseSymptoms: many(diseaseSymptoms),
-}));
+export const snapshots = pgTable("snapshots", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id")
+    .references(() => patients.id)
+    .notNull(),
+  t: timestamp("t").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
-export const symptomsRelations = relations(symptoms, ({ many }) => ({
-  diseaseSymptoms: many(diseaseSymptoms),
-  symptomExaminables: many(symptomExaminables),
-}));
+export const snapshotDescriptions = pgTable("snapshot_descriptions", {
+  id: serial("id").primaryKey(),
+  snapshotId: integer("snapshot_id")
+    .references(() => snapshots.id, { onDelete: "cascade" })
+    .notNull(),
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
-export const examinablesRelations = relations(examinables, ({ many }) => ({
-  symptomExaminables: many(symptomExaminables),
-  examinableCriteria: many(examinableCriteria),
-}));
-
-export const criteriaRelations = relations(criteria, ({ many }) => ({
-  examinableCriteria: many(examinableCriteria),
-}));
-
-// Linking table relations
-export const diseaseSymptomsRelations = relations(
-  diseaseSymptoms,
-  ({ one }) => ({
-    disease: one(diseases, {
-      fields: [diseaseSymptoms.diseaseId],
-      references: [diseases.id],
-    }),
-    symptom: one(symptoms, {
-      fields: [diseaseSymptoms.symptomId],
-      references: [symptoms.id],
-    }),
-  })
-);
-
-export const symptomExaminablesRelations = relations(
-  symptomExaminables,
-  ({ one }) => ({
-    symptom: one(symptoms, {
-      fields: [symptomExaminables.symptomId],
-      references: [symptoms.id],
-    }),
-    examinable: one(examinables, {
-      fields: [symptomExaminables.examinableId],
-      references: [examinables.id],
-    }),
-  })
-);
-
-export const examinableCriteriaRelations = relations(
-  examinableCriteria,
-  ({ one }) => ({
-    examinable: one(examinables, {
-      fields: [examinableCriteria.examinableId],
-      references: [examinables.id],
-    }),
-    criteria: one(criteria, {
-      fields: [examinableCriteria.criteriaId],
-      references: [criteria.id],
-    }),
-  })
-);
-
-export const snapshots = pgTable(
-  "snapshots",
-  {
-    id: serial("id").primaryKey(),
-    t: timestamp("t").notNull(),
-    descriptions: text("descriptions").array().notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
-  }
-);
-
-export const exams = pgTable(
-  "exams",
-  {
-    id: serial("id").primaryKey(),
-    t: timestamp("t").notNull(),
-    description: text("description").notNull(),
-    snapshotId: integer("snapshot_id")
-      .references(() => snapshots.id, { onDelete: "cascade" })
-      .notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
-  }
-);
+export const exams = pgTable("exams", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id")
+    .references(() => patients.id)
+    .notNull(),
+  t: timestamp("t").notNull(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 export const snapshotExams = pgTable(
   "snapshot_exams",
@@ -236,24 +178,21 @@ export const snapshotExams = pgTable(
   })
 );
 
-// Relations for snapshots
-export const snapshotsRelations = relations(snapshots, ({ many }) => ({
-  snapshotExams: many(snapshotExams),
-}));
+export const patients = pgTable("patients", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  rut: text("rut").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
-// Relations for exams
-export const examsRelations = relations(exams, ({ many }) => ({
-  snapshotExams: many(snapshotExams),
-}));
-
-// Relations for snapshotExams
-export const snapshotExamsRelations = relations(snapshotExams, ({ one }) => ({
-  snapshot: one(snapshots, {
-    fields: [snapshotExams.snapshotId],
-    references: [snapshots.id],
-  }),
-  exam: one(exams, {
-    fields: [snapshotExams.examId],
-    references: [exams.id],
-  }),
-}));
+export const graphs = pgTable("graphs", {
+  id: serial("id").primaryKey(),
+  snapshotId: integer("snapshot_id")
+    .references(() => snapshots.id, { onDelete: "cascade" })
+    .notNull(),
+  graph: jsonb("graph").notNull(),
+  symptoms: jsonb("symptoms").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
