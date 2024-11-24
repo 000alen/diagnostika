@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import {
   Dropdown,
@@ -14,19 +15,23 @@ import { Bell } from "lucide-react";
 
 import OverviewTab from "@/components/tabs/overview";
 import PatientsTab from "@/components/tabs/patients";
-import DiagnosticsTab from "@/components/tabs/diagnostics";
-import SettingsTab from "@/components/tabs/settings";
+import RecordsTab from "@/components/tabs/records";
+import EvaluationTab from "@client/components/tabs/evaluation";
+// import SettingsTab from "@/components/tabs/settings";
 import avatar from "@/assets/avatar.png";
 import layout from "./page.module.scss";
 
-const tabs = [
-  { name: "Vista general", content: <OverviewTab /> },
-  { name: "Diagnósticos", content: <PatientsTab /> },
-  { name: "Pacientes", content: <DiagnosticsTab /> },
-  { name: "Mi configuración", content: <SettingsTab /> },
-];
-
 export default function Page({ evaluationId }: { evaluationId: string }) {
+  const [activeTab, setActiveTab] = useState<string>("Vista general");
+
+  const tabs = [
+    { name: "Vista general", content: <OverviewTab setActiveTab={setActiveTab} /> },
+    { name: "Mis pacientes", content: <PatientsTab /> },
+    { name: "Registros", content: <RecordsTab /> },
+    { name: "Evaluación", content: <EvaluationTab /> },
+    // { name: "Mi configuración", content: <SettingsTab /> }
+  ];
+
   return (
     <main className={layout.main}>
       <header>
@@ -65,6 +70,8 @@ export default function Page({ evaluationId }: { evaluationId: string }) {
       </header>
       <Tabs
         aria-label="Reviewer Dashboard"
+        selectedKey={activeTab}
+        onSelectionChange={(key) => setActiveTab(key as string)}
         className={layout.tabs}
         radius="full"
         // @ts-expect-error typing is not exhaustive
