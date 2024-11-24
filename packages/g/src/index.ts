@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { logger } from "./logging";
+import { logger } from "@bananus/logging";
 
 import { embed, generateObject, cosineSimilarity } from "ai";
 import { z } from "zod";
