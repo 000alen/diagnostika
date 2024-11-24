@@ -18,8 +18,8 @@ const OverviewTab: FC<Props> = ({ setActiveTab }) => {
         <ResizablePanel>
           <div className={layout.leftPanel}>
             <div className={layout.content}>
-              <h1 className="text-4xl font-bold mb-1">Vista General</h1>
-              <h2 className="text-5xl">Marcelo Lemus</h2>
+              <h1 className="text-4xl font-bold mb-1">Bienvenido</h1>
+              <h2 className="text-5xl">Dr. Marcelo Lemus</h2>
             </div>
             <div className={layout.graphs}>
               <NodesComponent />

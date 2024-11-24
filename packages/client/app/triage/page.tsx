@@ -1,32 +1,20 @@
-'use client'
+"use client"
 
-import { useState, useRef, useEffect } from 'react'
-import { Mic, MicOff, Users, Loader2, ExternalLink, User, Clock } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
-import {
-  FileText,
-  Download,
-  TestTube,
-  Eye,
-  ClipboardList,
-  Activity,
-  HeartPulse,
-  FileSpreadsheet
-} from 'lucide-react'
+import { useState, useRef, useEffect } from "react";
+import { Mic, MicOff, File, Loader2, ExternalLink, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input as InputNextUI } from "@nextui-org/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TriageBoard() {
   const [isRecording, setIsRecording] = useState(false)
-  const [transcript, setTranscript] = useState('')
+  const [transcript, setTranscript] = useState("")
   const [audioLevel, setAudioLevel] = useState(0)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showRedirectButton, setShowRedirectButton] = useState(false)
@@ -56,23 +44,25 @@ export default function TriageBoard() {
   }
 
   const redirectToPatientData = () => {
-    window.open('https://ejemplo-historial-medico.com/paciente/123', '_blank')
+    window.open("https://ejemplo-historial-medico.com/paciente/123", "_blank")
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    // Make the bacground of the following div to be a cool gradient from top to bottom with blurred, from a cool whiteish gray to a cool blueish, considering this is for medical purposes
+    <div className="h-[100dvh] flex items-center justify-items-center bg-gradient-to-b from-[#f5f5f5] to-[#f0f9ff]">
       <div className="max-w-[1600px] mx-auto">
-        <h1 className="text-4xl font-bold mb-6">Panel de Triaje</h1>
-        <div className="flex gap-8 justify-center h-[calc(100vh-8rem)]">
+        <div className="flex gap-5 justify-center h-fit">
           {/* Patient Registration Panel - Left */}
-          <Card className="w-[18vw]">
+          <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-xl">
-                <User className="h-5 w-5 mr-2" />
-                Registro de Paciente
+              <CardTitle className="flex text-[1.1rem] flex-col">
+                <span>Registro de Paciente</span>
+                <p className="font-normal text-sm text-gray-700">
+                  Registra un nuevo paciente en la base de datos
+                </p>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white p-4 m-2 rounded-[20px] h-fit">
               <div className="space-y-3">
                 <div className="space-y-1">
                   <Label htmlFor="rut">RUT</Label>
@@ -117,21 +107,26 @@ export default function TriageBoard() {
                   </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 !mb-5">
                   <Label htmlFor="emergency-contact">Contacto Emergencia</Label>
                   <Input id="emergency-contact" placeholder="+56 9 1234 5678" />
                 </div>
 
-                <Button className="w-full">Registrar Paciente</Button>
+                <Button className="w-full rounded-full bg-blue-700">Registrar Paciente</Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Patient Notes Panel - Middle */}
-          <Card className="w-[50vw]">
-            <CardHeader>
+          <Card className="w-[50vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
+            <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">Notas del Paciente</CardTitle>
+                <CardTitle className="flex text-[1.1rem] flex-col">
+                  <span>Notas del Paciente</span>
+                  <p className="font-normal text-sm text-gray-700">
+                    Transforma las notas de voz en texto
+                  </p>
+                </CardTitle>
                 <div className="flex gap-2">
                   {showRedirectButton && (
                     <Button
@@ -146,7 +141,7 @@ export default function TriageBoard() {
                   <Button
                     variant={isRecording ? "destructive" : "default"}
                     onClick={toggleRecording}
-                    className="w-32"
+                    className="w-32 bg-blue-700"
                     disabled={isProcessing}
                   >
                     {isRecording ? (
@@ -164,7 +159,7 @@ export default function TriageBoard() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
               {isRecording && (
                 <Alert className="bg-red-50 border-red-200">
                   <div className="flex items-center gap-2">
@@ -189,28 +184,73 @@ export default function TriageBoard() {
               <Textarea
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
-                className="min-h-[200px] mb-4"
+                className="min-h-[150px] outline-none border-none shadow-none"
                 placeholder="Las notas de voz aparecerán aquí..."
+                style={{ resize: "none" }}
               />
             </CardContent>
+
+            {/* Card header de Enviar */}
+
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex text-[1.1rem] flex-col">
+                  <span>Examen</span>
+                  <p className="font-normal text-sm text-gray-700">
+                    Escriba una transcripción de su examen para tener información adicional
+                  </p>
+                </CardTitle>
+                <div className="flex gap-2">
+                  {showRedirectButton && (
+                    <Button
+                      variant="outline"
+                      className="bg-green-500 text-white hover:bg-green-600"
+                      onClick={redirectToPatientData}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Ver Historial Médico
+                    </Button>
+                  )}
+                  <Button
+                    className="w-32 bg-blue-700"
+                  >
+                      <>
+                        <File className="h-4 w-4 mr-2" />
+                        Enviar
+                      </>
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
+              <InputNextUI type="text" label="Titulo"></InputNextUI>
+              <Textarea
+                value={transcript}
+                onChange={(e) => setTranscript(e.target.value)}
+                className="h-fit min-h-[200px] max-h-[200px] outline-none border-none shadow-none"
+                placeholder="Examenes de sangre, biopsa..."
+                style={{ resize: "none" }}
+              />
+            </CardContent>
+
           </Card>
 
+          
           {/* Waiting List Panel - Right */}
-          <Card className="w-[18vw]">
+          <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between text-xl">
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
+              <CardTitle className="flex text-[1.1rem] flex-col">
+                <span>
                   Lista de Espera
-                </div>
-                <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs">
-                  3 pacientes
                 </span>
+                <p className="font-normal text-sm text-gray-700">
+                  Pacientes en espera de atención
+                </p>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4 rounded-[20px] bg-white p-2 m-2 h-[86%]">
               <div className="space-y-3">
-                <div className="flex items-center space-x-4 bg-red-100 p-4 rounded-lg">
+                <div className="flex items-center space-x-2 bg-red-100 p-2 rounded-[16px]">
                   <Avatar>
                     <AvatarImage src="/placeholder-avatar.jpg" alt="John Doe" />
                     <AvatarFallback>JD</AvatarFallback>
@@ -221,14 +261,13 @@ export default function TriageBoard() {
                       <Clock className="h-3 w-3 mr-1" />
                       30 min
                     </div>
-                    <Progress value={75} className="h-2 mt-2" />
                   </div>
                   <div className="px-3 py-1 bg-red-200 rounded-full text-xs font-semibold">
                     Urgente
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4 bg-yellow-100 p-4 rounded-lg">
+                <div className="flex items-center space-x-2 bg-yellow-100 p-2 rounded-[20px]">
                   <Avatar>
                     <AvatarFallback>MP</AvatarFallback>
                   </Avatar>
@@ -238,14 +277,13 @@ export default function TriageBoard() {
                       <Clock className="h-3 w-3 mr-1" />
                       15 min
                     </div>
-                    <Progress value={45} className="h-2 mt-2" />
                   </div>
                   <div className="px-3 py-1 bg-yellow-200 rounded-full text-xs font-semibold">
                     Medio
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4 bg-green-100 p-4 rounded-lg">
+                <div className="flex items-center space-x-2 bg-green-100 p-2 rounded-[20px]">
                   <Avatar>
                     <AvatarFallback>RS</AvatarFallback>
                   </Avatar>
@@ -255,7 +293,6 @@ export default function TriageBoard() {
                       <Clock className="h-3 w-3 mr-1" />
                       5 min
                     </div>
-                    <Progress value={25} className="h-2 mt-2" />
                   </div>
                   <div className="px-3 py-1 bg-green-200 rounded-full text-xs font-semibold">
                     Leve
