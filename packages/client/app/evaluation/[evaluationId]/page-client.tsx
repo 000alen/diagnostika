@@ -15,8 +15,9 @@ import { Bell } from "lucide-react";
 
 import OverviewTab from "@/components/tabs/overview";
 import PatientsTab from "@/components/tabs/patients";
-import DiagnosticsTab from "@/components/tabs/diagnostics";
-import SettingsTab from "@/components/tabs/settings";
+import RecordsTab from "@/components/tabs/records";
+import EvaluationTab from "@client/components/tabs/evaluation";
+// import SettingsTab from "@/components/tabs/settings";
 import avatar from "@/assets/avatar.png";
 import layout from "./page.module.scss";
 
@@ -25,9 +26,10 @@ export default function Page({ evaluationId }: { evaluationId: string }) {
 
   const tabs = [
     { name: "Vista general", content: <OverviewTab setActiveTab={setActiveTab} /> },
-    { name: "Diagnósticos", content: <DiagnosticsTab /> },
-    { name: "Pacientes", content: <PatientsTab /> },
-    { name: "Mi configuración", content: <SettingsTab /> }
+    { name: "Mis pacientes", content: <PatientsTab /> },
+    { name: "Registros", content: <RecordsTab /> },
+    { name: "Evaluación", content: <EvaluationTab /> },
+    // { name: "Mi configuración", content: <SettingsTab /> }
   ];
 
   return (
