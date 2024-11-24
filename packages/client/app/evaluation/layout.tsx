@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: any }) {
                 <p className="font-semibold">Iniciar sesión como</p>
                 <p className="font-semibold">william@hospital.cl</p>
               </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="settings">Mis ajustes</DropdownItem>
               <DropdownItem key="logout" color="danger">
                 Cerrar sesión
               </DropdownItem>

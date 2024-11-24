@@ -17,8 +17,8 @@ export const BentoGridSide = () => {
             <ArrowIcon />
           </Button>
           <span>
-            Scan <br />
-            Cardiology
+            Escaneo <br />
+            Cardiología
           </span>
           <p>1,276</p>
         </div>
@@ -30,7 +30,7 @@ export const BentoGridSide = () => {
             <p>William ({1})</p>
           </div>
           <div className={layout.biometric}>
-            <p>Heart Rate</p>
+            <p>Frecuencia cardíaca</p>
             <span>110 bpm</span>
           </div>
           <div className={layout.biometric}>

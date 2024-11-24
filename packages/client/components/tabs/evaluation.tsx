@@ -2,7 +2,7 @@
 const EvaluationTab = () => {
   return (
     <main>
-      <h1>This is the evaluations tab!</h1>
+      <h1>Esta es la pestaña de evaluaciones!</h1>
     </main>
   );
 }

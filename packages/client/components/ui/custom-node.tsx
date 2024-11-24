@@ -15,10 +15,10 @@ export function SymptomNode({ data }) {
     <Popover>
       <PopoverTrigger asChild>
         <div className="px-4 py-2 shadow-md rounded-md bg-amber-50 border border-amber-200 w-64 cursor-pointer">
-          <div className="font-bold text-amber-700">Symptom</div>
+          <div className="font-bold text-amber-700">Síntoma</div>
           <div className="font-semibold text-amber-900">{data.label}</div>
           <div className="mt-2">
-            <div className="text-sm text-amber-700">Confidence Level</div>
+            <div className="text-sm text-amber-700">Nivel de confianza</div>
             <Progress value={data.confidence} className="w-full bg-amber-200" indicatorClassName="bg-amber-500" />
             <div className="text-sm text-right text-amber-700">{data.confidence}%</div>
           </div>
@@ -68,10 +68,10 @@ export function DiagnosisNode({ data }) {
     <Popover>
       <PopoverTrigger asChild>
         <div className={`px-4 py-2 shadow-md rounded-md bg-emerald-50 border border-emerald-200 w-64 cursor-pointer ${data.rank > 1 ? 'opacity-70 hover:opacity-100 transition-opacity duration-200' : ''}`}>
-          <div className="font-bold text-emerald-700">Diagnosis {data.rank}</div>
+          <div className="font-bold text-emerald-700">Diagnostico {data.rank}</div>
           <div className="font-semibold text-emerald-900">{data.label}</div>
           <div className="mt-2">
-            <div className="text-sm text-emerald-700">Probability</div>
+            <div className="text-sm text-emerald-700">Probabilidad</div>
             <Progress value={data.probability} className="w-full bg-emerald-200" indicatorClassName="bg-emerald-500" />
             <div className="text-sm text-right text-emerald-700">{data.probability}%</div>
           </div>
@@ -83,7 +83,7 @@ export function DiagnosisNode({ data }) {
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
-              Approve
+              Aprobar
             </Button>
             <Button
               variant="outline"
@@ -92,7 +92,7 @@ export function DiagnosisNode({ data }) {
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsDown className="w-4 h-4 mr-2" />
-              Reject
+              Rechazar
             </Button>
           </div>
           <Handle type="target" position={Position.Top} className="w-16 !bg-emerald-500" />
@@ -102,7 +102,7 @@ export function DiagnosisNode({ data }) {
         <h3 className="font-semibold mb-2">{data.label} Information</h3>
         <p className="text-sm text-gray-600">{data.description}</p>
         <div className="mt-2">
-          <strong className="text-sm">Recommended Action:</strong>
+          <strong className="text-sm">Acción recomendada:</strong>
           <p className="text-sm mt-1">{data.recommendedAction}</p>
         </div>
       </PopoverContent>

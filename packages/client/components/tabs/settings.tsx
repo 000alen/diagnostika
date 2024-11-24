@@ -40,13 +40,13 @@ import { toast } from "@client/hooks/use-toast"
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+    message: "El nombre debe tener al menos 2 caracteres.",
   }),
   email: z.string().email({
-    message: "Please enter a valid email address.",
+    message: "Por favor, ingresa una dirección de correo electrónico válida.",
   }),
   birthDate: z.date({
-    required_error: "A date of birth is required.",
+    required_error: "Se requiere una fecha de nacimiento.",
   }),
 })
 
@@ -67,8 +67,8 @@ export default function SettingsTab() {
     setTimeout(() => {
       setIsLoading(false)
       toast({
-        title: "Settings updated",
-        description: "Your account settings have been updated successfully.",
+        title: "Ajustes actualizados.",
+        description: "Los ajustes de tu cuenta se han actualizado correctamente.",
       })
       console.log(values)
     }, 2000)
@@ -79,7 +79,7 @@ export default function SettingsTab() {
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
         <CardDescription>
-          Update your personal information and preferences.
+          Actualiza tu información personal y preferencias.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -92,10 +92,10 @@ export default function SettingsTab() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your name" {...field} />
+                    <Input placeholder="Ingresa tu nombre" {...field} />
                   </FormControl>
                   <FormDescription>
-                    This is the name that will be displayed on your profile.
+                    Este es el nombre que se mostrará en tu perfil.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -108,10 +108,10 @@ export default function SettingsTab() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your email" {...field} />
+                    <Input placeholder="Ingresa tu correo electrónico" {...field} />
                   </FormControl>
                   <FormDescription>
-                    We will never share your email with anyone else.
+                    Nunca compartiremos tu correo electrónico con nadie más.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -122,7 +122,7 @@ export default function SettingsTab() {
               name="birthDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date of birth</FormLabel>
+                  <FormLabel>Fecha de nacimiento</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -135,7 +135,7 @@ export default function SettingsTab() {
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Selecciona una fecha</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -154,7 +154,7 @@ export default function SettingsTab() {
                     </PopoverContent>
                   </Popover>
                   <FormDescription>
-                    Your date of birth is used to calculate your age.
+                    Tu fecha de nacimiento se utiliza para calcular tu edad.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

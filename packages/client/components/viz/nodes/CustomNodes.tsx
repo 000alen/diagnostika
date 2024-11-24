@@ -82,7 +82,7 @@ export function DiagnosisNode({ data }) {
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
-              Approve
+              Aprobar
             </Button>
             <Button
               variant="outline"
@@ -91,7 +91,7 @@ export function DiagnosisNode({ data }) {
               className="w-[45%] border-emerald-300 text-emerald-700 hover:bg-emerald-100"
             >
               <ThumbsDown className="w-4 h-4 mr-2" />
-              Reject
+              Rechazar
             </Button>
           </div>
           <Handle type="target" position={Position.Top} className="w-16 !bg-emerald-500" />
