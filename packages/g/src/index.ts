@@ -33,6 +33,8 @@ import {
   gt,
   sql,
   eq,
+  diseases,
+  diseaseSymptoms,
 } from "@bananus/db";
 import { Graph } from "./graph";
 import { Models } from "./models";
@@ -486,6 +488,7 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
 
   const graph = new Graph();
   const symptoms = [];
+  const exams = [];
 
   // Phase 1
   for (const snapshot of snapshots) {
@@ -517,6 +520,8 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       ...detectedSymptoms.map((x) => x.symptom)
     );
 
+    exams.push(...detectedSymptoms.map((x) => x.exam));
+
     logger.info("Processed snapshot symptoms", {
       describedSymptomCount: describedSymptoms.length,
       detectedSymptomCount: detectedSymptoms.length,
@@ -527,6 +532,7 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   return {
     graph,
     symptoms,
+    exams,
   };
 }
 
@@ -566,6 +572,30 @@ export function match(
 
     if (meanSimilarity >= threshold)
       return candidate.map(({ symptom }) => symptom);
+  }
+}
+
+export async function diagnose(
+  reportedSymptoms: Array<SymptomWithEmbedding>,
+  threshold: number
+) {
+  const candidateDiseases = await db.select().from(diseases);
+
+  for (const candidateDisease of candidateDiseases) {
+    const querySymptoms = await db
+      .select()
+      .from(symptoms)
+      .leftJoin(diseaseSymptoms, eq(diseaseSymptoms.symptomId, symptoms.id))
+      .where(eq(diseaseSymptoms.diseaseId, candidateDisease.id))
+      .then((results) => results.map((r) => r.symptoms));
+
+    const result = match(
+      reportedSymptoms,
+      querySymptoms as Array<SymptomWithEmbedding>,
+      threshold
+    );
+
+    if (result) return candidateDisease;
   }
 }
 

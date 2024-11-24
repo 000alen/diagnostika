@@ -4,10 +4,12 @@ import { z } from "zod";
 import {
   Snapshot,
   buildGraph,
+  diagnose,
   sonnet,
   titanEmbeddings,
   Models,
   Exam,
+  SymptomWithEmbedding,
 } from "@bananus/g";
 import {
   db,
@@ -234,6 +236,29 @@ export const appRouter = router({
         symptoms,
         graph,
       };
+    }),
+
+  diagnose: procedure
+    .input(z.object({ graphId: z.string(), threshold: z.number().optional() }))
+    .query(async ({ input: { graphId, threshold } }) => {
+      const graph = await db
+        .select()
+        .from(graphs)
+        .where(eq(graphs.id, graphId))
+        .then((rows) => rows[0]);
+
+      const diagnosis = await diagnose(
+        graph.symptoms as Array<SymptomWithEmbedding>,
+        threshold ?? 0.6
+      );
+
+      if (diagnosis)
+        await db
+          .update(graphs)
+          .set({ diagnosis })
+          .where(eq(graphs.id, graphId));
+
+      return diagnosis;
     }),
 });
 

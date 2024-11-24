@@ -194,6 +194,7 @@ export const graphs = pgTable("graphs", {
     .notNull(),
   graph: jsonb("graph").notNull(),
   symptoms: jsonb("symptoms").notNull(),
+  diagnosis: jsonb("diagnosis"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
