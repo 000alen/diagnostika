@@ -87,7 +87,7 @@ export default function TriageNotes() {
 
   return (
     <Card className="w-[50vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-3 pl-4 pt-5">
         <div className="flex items-center justify-between">
           <CardTitle className="flex text-[1.1rem] flex-col">
             <span>Notas del Paciente</span>
@@ -105,24 +105,24 @@ export default function TriageNotes() {
                   ? togglePauseResume
                   : startRecording
               }
-              className="w-32 bg-blue-700"
+              className="w-fit bg-blue-700 rounded-[14px] font-semibold"
               disabled={isTranscribing}
             >
               {isRecording ? (
                 <>
-                  <MicOff className="w-4 h-4 mr-2" />
+                  <MicOff className="w-4 h-4" />
                   Detener
                 </>
               ) : (
                 <>
-                  <Mic className="w-4 h-4 mr-2" />
+                  <Mic className="w-4 h-4" />
                   Grabar
                 </>
               )}
             </Button>
             <Button
               variant="secondary"
-              className="w-32"
+              className="w-fit rounded-[14px] font-semibold"
               disabled={isTranscribing || !patientId}
               onClick={onSave}
             >
@@ -131,7 +131,7 @@ export default function TriageNotes() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
+      <CardContent className="space-y-4 rounded-[20px] bg-white p-3 m-2">
         {isRecording && (
           <Alert className="border-red-200 bg-red-50">
             <div className="flex items-center gap-2">
@@ -147,14 +147,14 @@ export default function TriageNotes() {
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="min-h-[150px] outline-none border-none shadow-none"
+          className="min-h-[140px] outline-none border-none shadow-none"
           placeholder="Las notas de voz aparecerán aquí..."
           style={{ resize: "none" }}
         />
       </CardContent>
 
       {/* Card header de Enviar */}
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-3 pl-4 pt-5 mb-0">
         <div className="flex items-center justify-between">
           <CardTitle className="flex text-[1.1rem] flex-col">
             <span>Examen</span>
@@ -174,22 +174,22 @@ export default function TriageNotes() {
               </Button>
             )}
             <Button
-              className="w-32 bg-blue-700"
+              className="w-fit bg-blue-700 rounded-[14px] font-semibold"
             >
                 <>
-                  <File className="h-4 w-4 mr-2" />
+                  <File className="h-4 w-4" />
                   Enviar
                 </>
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 rounded-[20px] bg-white p-4 m-2">
+      <CardContent className="space-y-4 rounded-[20px] bg-white p-3 m-2 mb-0">
         <InputNextUI type="text" label="Titulo"></InputNextUI>
         <Textarea
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
-          className="h-fit min-h-[200px] max-h-[200px] outline-none border-none shadow-none"
+          className="h-fit min-h-[223px] max-h-[200px] outline-none border-none shadow-none"
           placeholder="Examenes de sangre, biopsa..."
           style={{ resize: "none" }}
         />

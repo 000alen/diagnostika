@@ -62,7 +62,7 @@ export default function TriageQueue() {
 
   return (
     <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-3 pl-4 pt-5">
         <CardTitle className="flex text-[1.1rem] flex-col">
           <span>
             Lista de Espera

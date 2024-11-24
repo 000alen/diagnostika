@@ -50,7 +50,7 @@ export default function TriageRegistration() {
 
   return (
     <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-3 pl-4 pt-5">
         <CardTitle className="flex text-[1.1rem] flex-col">
           <span>
             Registro de Paciente
@@ -60,7 +60,7 @@ export default function TriageRegistration() {
           </p>
         </CardTitle>
       </CardHeader>
-      <CardContent className="bg-white p-4 m-2 rounded-[20px] h-fit">
+      <CardContent className="bg-white p-3 m-2 rounded-[20px] h-fit">
         <Form action={action} className="space-y-3">
           <div className="space-y-1">
             <Label htmlFor="rut">RUT</Label>
@@ -151,7 +151,7 @@ export default function TriageRegistration() {
             </Select>
           </div>
 
-          <Button type="submit" className="w-full bg-blue-700">
+          <Button type="submit" className="w-full bg-blue-700 rounded-[14px] font-semibold">
             Registrar Paciente
           </Button>
         </Form>
