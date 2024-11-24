@@ -1,12 +1,17 @@
 "use client";
 //
+import { FC, Dispatch, SetStateAction } from "react";
 import { ResizablePanelGroup, ResizableHandle, ResizablePanel } from "@client/components/ui/resizable";
 //
 import { NodesComponent } from "../viz/nodes";
 import { BentoGridSide } from "../viz/bento";
 import layout from "./overview.module.scss";
 
-const OverviewTab = () => {
+interface Props {
+  setActiveTab: Dispatch<SetStateAction<string>>;
+}
+
+const OverviewTab: FC<Props> = ({ setActiveTab }) => {
   return (
     <div className={layout.container}>
       <ResizablePanelGroup direction="horizontal" className="pl-5 pr-5">
@@ -23,7 +28,7 @@ const OverviewTab = () => {
         </ResizablePanel>
         <ResizableHandle className="ml-3 mr-3" />
         <ResizablePanel>
-          <BentoGridSide />
+          <BentoGridSide setActiveTab={setActiveTab} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
