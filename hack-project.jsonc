@@ -2,9 +2,9 @@
     // nombre de su producto / solución
     "project_name": "diagnostika.",
     // descripción de una frase y directa al grano de la solución
-    "oneliner": "health improvement with ai",
+    "oneliner": "Inteligencia artificial para diagnóstico de enfermedades.",
     // url al logo de proyecto. mínimo 200x200, png. puede estar hosteado en el mismo repo.
-    "logo_url": "https://github.com/platanus-hack/team-x/blob/main/logo.png",
+    "logo_url": "https://github.com/platanus-hack/team-4/blob/assets/logo.png",
     // url para acceder a su app. si es apk u otro, link de descarga directa.
     "app_url": "https://ai.diagnostika.tech"
 }
