@@ -122,7 +122,7 @@ export class Graph {
     this.edges.push(edge);
   }
 
-  async removeEdge(edge: Edge) {
+  removeEdge(edge: Edge) {
     const closestEdge = this.getClosestEdge(edge);
 
     if (closestEdge) {
