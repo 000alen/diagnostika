@@ -2,7 +2,7 @@
 //
 import { FC } from "react";
 //
-import { BentoGridSide } from "../viz/bento";
+// import { BentoGridSide } from "../viz/bento";
 import layout from "./overview.module.scss";
 
 const OverviewTab: FC = ({}) => {
@@ -27,7 +27,7 @@ const OverviewTab: FC = ({}) => {
         >
           {/* <NodesComponent /> */}
         </div>
-        <BentoGridSide />
+        {/* <BentoGridSide /> */}
       </div>
     </div>
   );
