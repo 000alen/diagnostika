@@ -21,6 +21,8 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
   console.info("[dev] received diagnosis", diagnosis);
   console.info("[dev] received symptoms", symptoms);
 
+  const diagnosisIfExists = diagnosis?.name ?? "Pendiente";
+
   const symptomsLength = symptoms.length ?? 0; 
 
   return (
@@ -87,7 +89,7 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
             <div className="flex items-center w-fit px-3 py-1 mb-1 rounded-full backdrop-filter backdrop-blur-sm bg-white/15 text-sm font-light select-none border-1 border-[#8D959D] tracking-wider">
               En progreso
             </div>
-            <span>Diagnosis</span>
+            <span>{diagnosisIfExists}</span>
           </div>
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
