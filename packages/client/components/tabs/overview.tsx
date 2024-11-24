@@ -26,7 +26,7 @@ const OverviewTab: FC<Props> = ({ setActiveTab }) => {
             </div>
           </div>
         </ResizablePanel>
-        <ResizableHandle className="ml-3 mr-3" />
+        <ResizableHandle withHandle className="ml-3 mr-3" />
         <ResizablePanel>
           <BentoGridSide setActiveTab={setActiveTab} />
         </ResizablePanel>
