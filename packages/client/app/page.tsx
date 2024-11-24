@@ -1,12 +1,5 @@
-'use client'
+import { redirect } from "next/navigation";
 
-
-export default function Page() {
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      Hola
-    </div>
-  )
+export default async function Page() {
+  redirect("/triage");
 }
-
