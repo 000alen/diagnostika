@@ -14,26 +14,78 @@ interface Props {
     name: string;
     description: string;
   } | null;
-  symptoms: unknown;
+  symptoms: any[]; // eslint-disable-line
 }
 
 export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) => {
   console.info("[dev] received diagnosis", diagnosis);
   console.info("[dev] received symptoms", symptoms);
 
+  const symptomsLength = symptoms.length ?? 0; 
+
   return (
     <>
       <div className={layout.gridRow} style={{ marginBottom: 24 }}>
-        <div className={layout.gridCardTypeD}></div>
+        {(symptoms && symptoms.length > 0) ? (
+          symptoms.map((symptom, index) => (
+            <>
+              <div key={index} className={`${layout.gridCardTypeD} flex flex-col items-center justify-items-center`}>
+                <span className="font-bold mt-4 text-left w-[100%]">
+                  {symptom.name}
+                </span>
+                <p>
+                  {symptom.description}
+                </p>
+              </div>
+              <div className={layout.gridCardTypeC}>
+                <Button size="lg" radius="full" isIconOnly>
+                  <ArrowIcon />
+                </Button>
+                <span>
+                  Cantidad <br />
+                  de síntomas
+                </span>
+                <p>{symptomsLength}</p>
+              </div>
+            </>
+          ))
+        ) : (
+          <div className={`${layout.gridCardTypeD} flex flex-col items-center justify-items-center`}>
+            <span className="font-bold mt-4 text-left w-[100%]">
+              No se encontraron síntomas
+            </span>
+            <p>
+              No se encontraron síntomas
+            </p>
+          </div>
+        )}
+        {/* <div className={`${layout.gridCardTypeD} flex flex-col items-center justify-items-center`}>
+          <span className="font-bold mt-4 text-left w-[100%]">
+            {symptoms[0].name}
+          </span>
+          <p>
+            {symptoms[0].description}
+          </p>
+        </div>
+        {symptomsList.length > 1 && (
+          <div className={layout.gridCardTypeD}>
+            <span className="font-bold mt-4 text-left w-[100%]">
+              {symptoms[1].name}
+            </span>
+            <p>
+              {symptoms[1].description}
+            </p>
+          </div>
+        )} */}
         <div className={layout.gridCardTypeC}>
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
           </Button>
           <span>
-            Escaneo <br />
-            Cardiología
+            Cantidad <br />
+            de síntomas
           </span>
-          <p>1,276</p>
+          <p>{symptomsLength}</p>
         </div>
       </div>
       <div className={layout.gridRow}>
@@ -43,8 +95,8 @@ export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) =
             <p>{patientName}</p>
           </div>
           <div className={layout.biometric}>
-            <p>Frecuencia cardíaca</p>
-            <span>110 bpm</span>
+            <p>Síntomas</p>
+            <span>{symptoms!.length ?? 0}</span>
           </div>
           <div className={layout.biometric}>
             <p>Temperatura</p>
