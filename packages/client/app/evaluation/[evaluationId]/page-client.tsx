@@ -14,13 +14,17 @@ interface PageProps {
     edges: gEdge[];
   };
   symptoms: unknown;
+  diagnosis: {
+    name: string;
+    description: string;
+  } | null;
   patientId: number;
   patientName: string;
 }
 
-export default function Page({ patientName, graph }: PageProps) {
+export default function Page({ patientName, graph, diagnosis }: PageProps) {
   const nodes = useMemo<Node[]>(() => {
-    return graph.nodes.map((node) => {
+    const _nodes = graph.nodes.map((node) => {
       switch (node.type) {
         case "Symptom":
           return {
@@ -49,10 +53,26 @@ export default function Page({ patientName, graph }: PageProps) {
           };
       }
     });
-  }, [graph.nodes]);
+
+    if (diagnosis) {
+      _nodes.push({
+        id: diagnosis.name,
+        type: "diagnosis",
+        data: {
+          label: diagnosis.name,
+          probability: 80,
+          rank: 1,
+          description: diagnosis.description,
+        },
+        position: { x: 0, y: 0 },
+      });
+    }
+
+    return _nodes;
+  }, [diagnosis, graph.nodes]);
 
   const edges = useMemo<Edge[]>(() => {
-    return graph.edges.map((edge) => {
+    const _edges = graph.edges.map((edge) => {
       return {
         id: edge.id,
         source: edge.source,
@@ -61,7 +81,22 @@ export default function Page({ patientName, graph }: PageProps) {
         animated: true,
       };
     });
-  }, [graph.edges]);
+
+    if (diagnosis)
+      nodes
+        .filter((node) => node.type === "symptom")
+        .forEach((node) => {
+          _edges.push({
+            id: `${node.id}-${diagnosis.name}`,
+            source: node.id,
+            target: diagnosis.name,
+            type: "custom",
+            animated: true,
+          });
+        });
+
+    return _edges;
+  }, [diagnosis, graph.edges, nodes]);
 
   return (
     <div

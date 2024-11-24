@@ -7,6 +7,7 @@ export default async function ReviewerDashboard() {
       id: graphs.id,
       graph: graphs.graph,
       symptoms: graphs.symptoms,
+      diagnosis: graphs.diagnosis,
       patientId: patients.id,
       patientName: patients.name,
     })

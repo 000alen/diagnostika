@@ -16,6 +16,7 @@ import { Chip, ChipProps } from "@nextui-org/chip";
 
 import layout from "@/components/tabs/patients.module.scss";
 import { useRouter } from "next/navigation";
+import { trpc } from "@client/lib/trpc-client";
 
 const columns = [
   { name: "NAME", uid: "name" },
@@ -34,6 +35,7 @@ interface PageProps {
     id: string;
     graph: unknown;
     symptoms: unknown;
+    diagnosis: unknown;
     patientId: number | null;
     patientName: string | null;
   }[];
@@ -41,6 +43,8 @@ interface PageProps {
 
 export default function Page({ graphs }: PageProps) {
   const router = useRouter();
+
+  const { mutateAsync: diagnose } = trpc.diagnose.useMutation();
 
   const renderCell = useCallback(
     (row: any, columnKey: React.Key) => {
@@ -77,6 +81,15 @@ export default function Page({ graphs }: PageProps) {
           return (
             <div className="relative flex items-center justify-end gap-2">
               <Button
+                onClick={async () => {
+                  const diagnosis = await diagnose({ graphId: row.id });
+
+                  console.log(diagnosis);
+                }}
+              >
+                Diagnose
+              </Button>
+              <Button
                 onClick={() => {
                   router.push(`/evaluation/${row.id}`);
                 }}
@@ -89,7 +102,7 @@ export default function Page({ graphs }: PageProps) {
           return cellValue;
       }
     },
-    [router]
+    [diagnose, router]
   );
 
   const items = useMemo(

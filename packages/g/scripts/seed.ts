@@ -2,7 +2,7 @@ import "dotenv/config";
 import { readFile } from "fs/promises";
 
 import { Criteria, Examinable, SymptomWithEmbedding } from "../src/types";
-import { logger } from "../src/logging";
+import { logger } from "@bananus/logging";
 import { titanEmbeddings } from "../src/models";
 import { embed } from "ai";
 import {

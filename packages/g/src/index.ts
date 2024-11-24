@@ -581,6 +581,11 @@ export async function diagnose(
 ) {
   const candidateDiseases = await db.select().from(diseases);
 
+  logger.debug("Diagnosing diseases", {
+    reportedSymptomCount: reportedSymptoms.length,
+    candidateDiseaseCount: candidateDiseases.length,
+  });
+
   for (const candidateDisease of candidateDiseases) {
     const querySymptoms = await db
       .select()

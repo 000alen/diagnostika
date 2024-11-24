@@ -240,7 +240,7 @@ export const appRouter = router({
 
   diagnose: procedure
     .input(z.object({ graphId: z.string(), threshold: z.number().optional() }))
-    .query(async ({ input: { graphId, threshold } }) => {
+    .mutation(async ({ input: { graphId, threshold } }) => {
       const graph = await db
         .select()
         .from(graphs)

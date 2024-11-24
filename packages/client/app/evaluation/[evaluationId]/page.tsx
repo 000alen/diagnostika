@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db, eq, graphs, patients, snapshots } from "@bananus/db";
 import Page from "./page-client";
 
@@ -12,6 +13,7 @@ export default async function ReviewerDashboard({
     .select({
       graph: graphs.graph,
       symptoms: graphs.symptoms,
+      diagnosis: graphs.diagnosis,
       patientId: patients.id,
       patientName: patients.name,
     })
@@ -24,8 +26,9 @@ export default async function ReviewerDashboard({
   return (
     <Page
       evaluationId={evaluationId}
-      graph={graph.graph}
+      graph={graph.graph as any}
       symptoms={graph.symptoms}
+      diagnosis={graph.diagnosis as any}
       patientId={graph.patientId!}
       patientName={graph.patientName!}
     />
