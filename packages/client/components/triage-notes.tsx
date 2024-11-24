@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useContext, useCallback } from "react";
-import { Mic, MicOff, ExternalLink, File } from "lucide-react";
+import { Mic, MicOff, File } from "lucide-react";
 import { Input as InputNextUI } from "@nextui-org/input";
 //
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ export default function TriageNotes() {
   const { patientId } = useContext(TriageContext)!;
 
   const [text, setText] = useState("");
-  const [transcript, setTranscript] = useState("");
   const [isTranscribing, setIsTranscribing] = useState(false);
 
   const [examName, setExamName] = useState("");
@@ -166,9 +165,7 @@ export default function TriageNotes() {
         />
       </CardContent>
 
-      <hr
-        className="mt-4 border-t-2 border-gray-300 h-[1px] w-full"
-      />
+      <hr className="mt-4 border-t-2 border-gray-300 h-[1px] w-full" />
 
       {/* Card header de Enviar */}
       <CardHeader className="pt-2 pb-3 pl-4 mb-0">
@@ -181,22 +178,26 @@ export default function TriageNotes() {
             </p>
           </CardTitle>
           <div className="flex gap-2">
-            <Button
-              className="w-32 bg-blue-700"
-            >
-                <>
-                  <File className="w-4 h-4 mr-2" />
-                  Enviar
-                </>
+            <Button className="w-32 bg-blue-700" onClick={onSaveExam}>
+              <>
+                <File className="w-4 h-4 mr-2" />
+                Enviar
+              </>
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 rounded-[20px] bg-white p-3 m-2 mb-0">
-        <InputNextUI type="text" label="Titulo"></InputNextUI>
+        <InputNextUI
+          type="text"
+          label="Titulo"
+          value={examName}
+          onChange={(e) => setExamName(e.target.value)}
+          placeholder="Examen de sangre"
+        ></InputNextUI>
         <Textarea
-          value={transcript}
-          onChange={(e) => setTranscript(e.target.value)}
+          value={examDescription}
+          onChange={(e) => setExamDescription(e.target.value)}
           className="h-fit min-h-[223px] max-h-[200px] outline-none border-none shadow-none"
           placeholder="Examenes de sangre, biopsa..."
           style={{ resize: "none" }}
