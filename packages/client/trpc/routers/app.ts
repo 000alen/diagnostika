@@ -18,6 +18,7 @@ import {
   snapshotDescriptions,
   exams,
   snapshotExams,
+  graphs,
 } from "@bananus/db";
 
 const models: Models = {
@@ -161,9 +162,18 @@ export const appRouter = router({
       const snapshot = await getFullSnapshot(patientId, snapshotId);
       const { symptoms, graph } = await buildGraph(models, [snapshot]);
 
+      const insertedGraph = await db
+        .insert(graphs)
+        .values({
+          snapshotId,
+          symptoms,
+          graph,
+        })
+        .returning()
+        .then((rows) => rows[0]);
+
       return {
-        symptoms,
-        graph,
+        graphId: insertedGraph.id,
       };
     }),
 });

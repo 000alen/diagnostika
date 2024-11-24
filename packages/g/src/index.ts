@@ -485,6 +485,7 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
   snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
 
   const graph = new Graph();
+  const symptoms = [];
 
   // Phase 1
   for (const snapshot of snapshots) {
@@ -506,10 +507,15 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       snapshot.exams
     );
 
-    const symptoms = [
+    // const symptoms = [
+    //   ...describedSymptoms,
+    //   ...detectedSymptoms.map((x) => x.symptom),
+    // ];
+
+    symptoms.push(
       ...describedSymptoms,
-      ...detectedSymptoms.map((x) => x.symptom),
-    ];
+      ...detectedSymptoms.map((x) => x.symptom)
+    );
 
     logger.info("Processed snapshot symptoms", {
       describedSymptomCount: describedSymptoms.length,

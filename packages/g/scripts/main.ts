@@ -1,4 +1,4 @@
-import { logger } from "../src/logging";
+import { logger } from "@bananus/logging";
 import { buildGraph } from "../src/";
 import { Snapshot } from "../src/types";
 import { sonnet, titanEmbeddings } from "../src/models";
@@ -29,9 +29,9 @@ async function main() {
       snapshots
     );
 
-    logger.info("Symptom graph", { graph });
+    logger.info(JSON.stringify(graph, null, 2));
 
-    logger.info("Symptoms", { symptoms });
+    logger.info(JSON.stringify(symptoms, null, 2));
 
     logger.info("Successfully built symptom graph");
   } catch (error) {
