@@ -1,5 +1,6 @@
 "use client";
 //
+import { FC } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/button";
 import { ArrowUpRight as ArrowIcon } from "lucide-react";
@@ -7,7 +8,17 @@ import { ArrowUpRight as ArrowIcon } from "lucide-react";
 import avatar from "@/assets/avatar.png";
 import layout from "./index.module.scss";
 
-export const BentoGridSide = () => {
+interface Props {
+  patientName: string;
+  diagnosis: {
+    name: string;
+    description: string;
+  } | null;
+}
+
+export const BentoGridSide: FC<Props> = ({ patientName, diagnosis }) => {
+  console.info("[dev] received diagnosis", diagnosis);
+
   return (
     <>
       <div className={layout.gridRow} style={{ marginBottom: 24 }}>
@@ -27,7 +38,7 @@ export const BentoGridSide = () => {
         <div className={layout.gridCardTypeA}>
           <div>
             <Image src={avatar} alt="avatar" height={35} width={45} />
-            <p>William ({1})</p>
+            <p>{patientName}</p>
           </div>
           <div className={layout.biometric}>
             <p>Frecuencia cardíaca</p>

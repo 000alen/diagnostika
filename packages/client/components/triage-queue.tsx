@@ -2,7 +2,6 @@
 
 import { Clock, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@client/lib/trpc-client";
 import { useContext } from "react";
@@ -97,7 +96,6 @@ export default function TriageQueue() {
                   <Clock className="w-3 h-3 mr-1" />
                   30 min
                 </div>
-                <Progress value={75} className="h-2 mt-2" />
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-[5rem]">

@@ -178,7 +178,7 @@ export default function TriageNotes() {
             </p>
           </CardTitle>
           <div className="flex gap-2">
-            <Button className="w-32 bg-blue-700" onClick={onSaveExam}>
+            <Button className="w-fit bg-blue-700 rounded-[14px] font-semibold" onClick={onSaveExam}>
               <>
                 <File className="w-4 h-4 mr-2" />
                 Enviar

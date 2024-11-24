@@ -121,7 +121,7 @@ export default function Page({ patientName, graph, diagnosis }: PageProps) {
           <NodesComponent initialNodes={nodes} initialEdges={edges} />
         </div>
 
-        <BentoGridSide />
+        <BentoGridSide patientName={patientName} diagnosis={diagnosis} />
       </div>
     </div>
   );
