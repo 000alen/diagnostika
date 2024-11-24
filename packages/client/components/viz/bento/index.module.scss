@@ -33,16 +33,91 @@
   }
 }
 
-.customGrid {
-  // border: 1px solid cyan;
+.gridRow {
+  display: flex;
+  gap: 1rem;
 }
 
-.gridCard {
+/** Grid Card type D */
+.gridCardTypeD {
+  flex: 1;
+  border-radius: 35px;
+  border: 1px solid #e0e0e0;
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  padding: .85rem;
+  position: relative;
+}
+
+/** Grid Card type C */
+.gridCardTypeC {
+  border-radius: 35px;
+  border: 1px solid #e0e0e0;
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  padding: .85rem;
+  position: relative;
+
+  > button:first-child {
+    background-color: transparent;
+    position: absolute;
+    color: #1e1e1e;
+    right: .9rem;
+    top: .8rem;
+  }
+
+  span {
+    font-weight: 600;
+    position: absolute;
+    left: 1.25rem;
+    top: 1rem;
+  }
+
+  p {
+    position: absolute;
+    font-weight: 600;
+    font-size: 1.75rem;
+    bottom: 1.5rem;
+    left: 1.25rem;
+  }
+}
+
+/** Grid Card type B */
+.gridCardTypeB {
+  flex: 1;
+  border-radius: 35px;
+  width: 275px;
+  height: 350px;
+  padding: .85rem;
+  position: relative;
+  background-color: #1e1e1e;
+
+  > div:first-child {
+    color: white;
+    font-size: 2rem;
+    font-weight: 500;
+    position: absolute;
+    bottom: 5rem;
+  }
+
+  > button:last-child {
+    background-color: white;
+    position: absolute;
+    color: #1e1e1e;
+    right: .9rem;
+    bottom: .8rem;
+  }
+}
+
+/** Grid Card type A */
+.gridCardTypeA {
   border: 1px solid #e0e0e0;
   border-radius: 35px;
   background-color: white;
-  height: 400px;
-  width: 315px;
+  height: 350px;
+  width: 275px;
   padding: .7rem;
   position: relative;
 
@@ -69,6 +144,21 @@
       font-weight: 400;
       font-family: "Montserrat", sans-serif;
       font-weight: 500;
+    }
+  }
+
+  .biometric {
+    height: fit-content;
+    padding: .6rem 1rem;
+
+    p {
+      font-size: .9rem;
+      color: #666666;
+    }
+  
+    span {
+      font-size: 1.75rem;
+      font-weight: 600;
     }
   }
 
