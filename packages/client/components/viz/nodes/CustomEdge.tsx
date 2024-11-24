@@ -10,7 +10,6 @@ export default function CustomEdge({
   sourcePosition,
   targetPosition,
   style = {},
-  data,
   markerEnd,
 }: EdgeProps) {
   const [edgePath] = getBezierPath({
@@ -27,7 +26,7 @@ export default function CustomEdge({
       <path
         id={id}
         style={style}
-        className="react-flow__edge-path stroke-2 stroke-purple-500"
+        className="stroke-2 react-flow__edge-path stroke-purple-500"
         d={edgePath}
         markerEnd={markerEnd}
       />

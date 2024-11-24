@@ -2,7 +2,6 @@
 //
 import { FC } from "react";
 //
-import { NodesComponent } from "../viz/nodes";
 import { BentoGridSide } from "../viz/bento";
 import layout from "./overview.module.scss";
 
@@ -26,7 +25,7 @@ const OverviewTab: FC = ({}) => {
             marginBottom: 24,
           }}
         >
-          <NodesComponent />
+          {/* <NodesComponent /> */}
         </div>
         <BentoGridSide />
       </div>

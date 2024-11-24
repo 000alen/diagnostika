@@ -1,10 +1,12 @@
-import { Users, Clock, X } from "lucide-react";
+"use client";
+
+import { Clock, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@client/lib/trpc-client";
 import { useContext } from "react";
-import { TriageContext } from "@/app/triage/page";
+import { TriageContext } from "@/app/triage/context";
 
 const priorityComponents = [
   <></>,
@@ -62,12 +64,10 @@ export default function TriageQueue() {
 
   return (
     <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
-      <CardHeader className="pb-3 pl-4 pt-5">
+      <CardHeader className="pt-5 pb-3 pl-4">
         <CardTitle className="flex text-[1.1rem] flex-col">
-          <span>
-            Lista de Espera
-          </span>
-          <p className="font-normal text-sm text-gray-700">
+          <span>Lista de Espera</span>
+          <p className="text-sm font-normal text-gray-700">
             Pacientes en espera de atención
           </p>
           {/* <span className="bg-gray-200 text-black px-2 py-0.5 rounded-full text-xs">

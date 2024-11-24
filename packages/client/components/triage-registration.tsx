@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,9 +11,8 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { TriageContext } from "@/app/triage/page";
+import { TriageContext } from "@/app/triage/context";
 import { trpc } from "@client/lib/trpc-client";
-import { User } from "lucide-react";
 import Form from "next/form";
 import { useContext } from "react";
 import { z } from "zod";
@@ -50,12 +51,10 @@ export default function TriageRegistration() {
 
   return (
     <Card className="w-[20vw] bg-[#e7e7e7] shadow-md !rounded-[30px]">
-      <CardHeader className="pb-3 pl-4 pt-5">
+      <CardHeader className="pt-5 pb-3 pl-4">
         <CardTitle className="flex text-[1.1rem] flex-col">
-          <span>
-            Registro de Paciente
-          </span>
-          <p className="font-normal text-sm text-gray-700">
+          <span>Registro de Paciente</span>
+          <p className="text-sm font-normal text-gray-700">
             Registra un nuevo paciente en la base de datos
           </p>
         </CardTitle>
@@ -110,7 +109,7 @@ export default function TriageRegistration() {
             <Input id="emergency-contact" placeholder="+56 9 1234 5678" />
           </div>
 
-          <div className="space-y-1 pb-10">
+          <div className="pb-10 space-y-1">
             <Label htmlFor="priority">Prioridad de Atención</Label>
             <Select name="priority" defaultValue="3">
               <SelectTrigger>
@@ -151,7 +150,10 @@ export default function TriageRegistration() {
             </Select>
           </div>
 
-          <Button type="submit" className="w-full bg-blue-700 rounded-[14px] font-semibold">
+          <Button
+            type="submit"
+            className="w-full bg-blue-700 rounded-[14px] font-semibold"
+          >
             Registrar Paciente
           </Button>
         </Form>

@@ -60,6 +60,7 @@ export default function Page({ patientName, graph, diagnosis }: PageProps) {
         type: "diagnosis",
         data: {
           label: diagnosis.name,
+          // @ts-expect-error weird typing
           probability: 80,
           rank: 1,
           description: diagnosis.description,

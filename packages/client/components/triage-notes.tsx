@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TriageContext } from "@/app/triage/page";
+import { TriageContext } from "@/app/triage/context";
 import useAudioRecorder from "@/hooks/useAudioRecorder";
 import { trpc } from "@client/lib/trpc-client";
 
