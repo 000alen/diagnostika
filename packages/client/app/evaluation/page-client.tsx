@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import OverviewTab from "@/components/tabs/overview";
+import PatientsTab from "@/components/tabs/patients";
 
 export default function Page({}: { evaluationId: string }) {
-  return <OverviewTab />;
+  return <PatientsTab />;
 }

@@ -11,14 +11,16 @@ interface Props {
   setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
-const OverviewTab: FC<Props> = ({ setActiveTab }) => {
+const setActiveTab = (tab: string) => {}
+
+const OverviewTab: FC<Props> = ({  }) => {
   return (
     <div className={layout.container}>
       <ResizablePanelGroup direction="horizontal" className="pl-5 pr-5">
         <ResizablePanel>
           <div className={layout.leftPanel}>
             <div className={layout.content}>
-              <h1 className="text-4xl font-bold mb-1">Vista General</h1>
+              <h1 className="mb-1 text-4xl font-bold">Vista General</h1>
               <h2 className="text-5xl">Marcelo Lemus</h2>
             </div>
             <div className={layout.graphs}>

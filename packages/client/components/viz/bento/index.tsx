@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@nextui-org/button";
 import { Search } from "lucide-react";
-import { ArrowUpRight as ArrowIcon } from 'lucide-react';
+import { ArrowUpRight as ArrowIcon } from "lucide-react";
 //
 import avatar from "@/assets/avatar.png";
 import layout from "./index.module.scss";
@@ -18,36 +18,26 @@ export const BentoGridSide = ({ setActiveTab }: Props) => {
   const goToPerfilPaciente = () => {
     // set chosen patient data
     setActiveTab("Pacientes");
-  }
+  };
 
   return (
     <>
       <div className={layout.wrapper}>
-        <div>
-          <p>Diagnósticos</p>
-          <div className="flex gap-2 bg-slate-100 items-center p-2 rounded-full">
-            <Search className="ml-2"/>
-            <input
-              className="bg-slate-100 w-full px-1 py-2 rounded-lg text-gray-600 focus:outline-none"
-              type="text"
-              name="search-diagnostics"
-              placeholder="Buscar ..."
-            />
-          </div>
-        </div>
         <Button onClick={goToPacientesTab}>
           Mis pacientes
           <ArrowIcon />
         </Button>
       </div>
-      <div className={layout.gridRow} style={{ marginBottom: 24}}>
-        <div className={layout.gridCardTypeD}>
-        </div>
+      <div className={layout.gridRow} style={{ marginBottom: 24 }}>
+        <div className={layout.gridCardTypeD}></div>
         <div className={layout.gridCardTypeC}>
           <Button size="lg" radius="full" isIconOnly>
             <ArrowIcon />
           </Button>
-          <span>Scan <br/>Cardiology</span>
+          <span>
+            Scan <br />
+            Cardiology
+          </span>
           <p>1,276</p>
         </div>
       </div>
@@ -69,7 +59,12 @@ export const BentoGridSide = ({ setActiveTab }: Props) => {
             <p>SpO2</p>
             <span>96%</span>
           </div>
-          <Button size="lg" radius="full" isIconOnly onClick={goToPerfilPaciente}>
+          <Button
+            size="lg"
+            radius="full"
+            isIconOnly
+            onClick={goToPerfilPaciente}
+          >
             <ArrowIcon />
           </Button>
         </div>
@@ -80,11 +75,16 @@ export const BentoGridSide = ({ setActiveTab }: Props) => {
             </div>
             <span>Osteoporosis</span>
           </div>
-          <Button size="lg" radius="full" isIconOnly onClick={goToPerfilPaciente}>
+          <Button
+            size="lg"
+            radius="full"
+            isIconOnly
+            onClick={goToPerfilPaciente}
+          >
             <ArrowIcon />
           </Button>
         </div>
       </div>
     </>
   );
-}
+};
