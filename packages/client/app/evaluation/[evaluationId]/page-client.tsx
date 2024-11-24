@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useMemo } from "react";
@@ -121,7 +122,7 @@ export default function Page({ patientName, graph, diagnosis, symptoms }: PagePr
           <NodesComponent initialNodes={nodes} initialEdges={edges} />
         </div>
 
-        <BentoGridSide patientName={patientName} diagnosis={diagnosis} symptoms={symptoms} />
+        <BentoGridSide patientName={patientName} diagnosis={diagnosis} symptoms={symptoms as any} />
       </div>
     </div>
   );
