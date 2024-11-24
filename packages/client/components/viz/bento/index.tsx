@@ -14,10 +14,12 @@ interface Props {
     name: string;
     description: string;
   } | null;
+  symptoms: unknown;
 }
 
-export const BentoGridSide: FC<Props> = ({ patientName, diagnosis }) => {
+export const BentoGridSide: FC<Props> = ({ patientName, diagnosis, symptoms }) => {
   console.info("[dev] received diagnosis", diagnosis);
+  console.info("[dev] received symptoms", symptoms);
 
   return (
     <>

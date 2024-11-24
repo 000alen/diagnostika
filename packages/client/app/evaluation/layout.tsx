@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: any }) {
             <DropdownMenu aria-label="Profile actions" variant="flat">
               <DropdownItem key="profile" className="gap-2 h-14">
                 <p className="font-semibold">Iniciar sesión como</p>
-                <p className="font-semibold">william@hospital.cl</p>
+                <p className="font-semibold">usuario@invitado.com</p>
               </DropdownItem>
               <DropdownItem key="settings">Mis ajustes</DropdownItem>
               <DropdownItem key="logout" color="danger">

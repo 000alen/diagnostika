@@ -22,7 +22,7 @@ interface PageProps {
   patientName: string;
 }
 
-export default function Page({ patientName, graph, diagnosis }: PageProps) {
+export default function Page({ patientName, graph, diagnosis, symptoms }: PageProps) {
   const nodes = useMemo<Node[]>(() => {
     const _nodes = graph.nodes.map((node) => {
       switch (node.type) {
@@ -121,7 +121,7 @@ export default function Page({ patientName, graph, diagnosis }: PageProps) {
           <NodesComponent initialNodes={nodes} initialEdges={edges} />
         </div>
 
-        <BentoGridSide patientName={patientName} diagnosis={diagnosis} />
+        <BentoGridSide patientName={patientName} diagnosis={diagnosis} symptoms={symptoms} />
       </div>
     </div>
   );
