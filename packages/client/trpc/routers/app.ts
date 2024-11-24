@@ -20,6 +20,7 @@ import {
   snapshotExams,
   graphs,
   queue,
+  patients,
 } from "@bananus/db";
 
 const models: Models = {
@@ -80,8 +81,14 @@ async function getFullSnapshot(patientId: number, snapshotId: number) {
 export const appRouter = router({
   getQueue: procedure.query(async () => {
     return await db
-      .select()
+      .select({
+        t: queue.t,
+        priority: queue.priority,
+        patientId: queue.patientId,
+        patientName: patients.name,
+      })
       .from(queue)
+      .leftJoin(patients, eq(queue.patientId, patients.id))
       .orderBy(desc(queue.priority), desc(queue.t));
   }),
 
@@ -103,7 +110,18 @@ export const appRouter = router({
 
   createPatient: procedure
     .input(z.object({ name: z.string(), rut: z.string() }))
-    .mutation(async () => {}),
+    .mutation(async ({ input: { name, rut } }) => {
+      const insertedPatient = await db
+        .insert(patients)
+        .values({
+          name,
+          rut,
+        })
+        .returning()
+        .then((rows) => rows[0]);
+
+      return insertedPatient;
+    }),
 
   createSnapshot: procedure
     .input(z.object({ patientId: z.number() }))

@@ -5,7 +5,7 @@ import OpenAI, { toFile } from "openai";
 const openai = new OpenAI();
 
 const formDataSchema = z.object({
-  id: z.string(),
+  patientId: z.number(),
 });
 
 export const maxDuration = 60;
@@ -16,7 +16,7 @@ export const POST = async (request: Request) => {
   const formData = await request.formData();
 
   const result = formDataSchema.safeParse({
-    id: formData.get("id"),
+    patientId: parseInt(formData.get("patientId") as string),
   });
 
   if (!result.success)
