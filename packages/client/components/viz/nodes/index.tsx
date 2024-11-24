@@ -1,6 +1,6 @@
 "use client";
 //
-import React from "react";
+import React, { useMemo } from "react";
 import ReactFlow, {
   Node,
   Edge,
@@ -191,12 +191,18 @@ const getLayoutedElements = (
   return { nodes, edges };
 };
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+export const NodesComponent = ({
+  initialEdges,
   initialNodes,
-  initialEdges
-);
+}: {
+  initialEdges: Edge[];
+  initialNodes: Node[];
+}) => {
+  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
+    () => getLayoutedElements(initialNodes, initialEdges),
+    [initialEdges, initialNodes]
+  );
 
-export const NodesComponent = () => {
   const [nodes, , onNodesChange] = useNodesState(layoutedNodes);
   const [edges, , onEdgesChange] = useEdgesState(layoutedEdges);
 
