@@ -153,8 +153,12 @@ export default function TriageNotes() {
         />
       </CardContent>
 
+      <hr
+        className="mt-4 border-t-2 border-gray-300 h-[1px] w-full"
+      />
+
       {/* Card header de Enviar */}
-      <CardHeader className="pb-3 pl-4 pt-5 mb-0">
+      <CardHeader className="pb-3 pl-4 pt-2 mb-0">
         <div className="flex items-center justify-between">
           <CardTitle className="flex text-[1.1rem] flex-col">
             <span>Examen</span>
