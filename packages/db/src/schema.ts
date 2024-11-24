@@ -196,3 +196,14 @@ export const graphs = pgTable("graphs", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const queue = pgTable("queue", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id")
+    .references(() => patients.id, { onDelete: "cascade" })
+    .notNull(),
+  t: timestamp("t").notNull(),
+  priority: integer("priority").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});

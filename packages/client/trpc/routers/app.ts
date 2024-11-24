@@ -19,6 +19,7 @@ import {
   exams,
   snapshotExams,
   graphs,
+  queue,
 } from "@bananus/db";
 
 const models: Models = {
@@ -77,6 +78,29 @@ async function getFullSnapshot(patientId: number, snapshotId: number) {
 }
 
 export const appRouter = router({
+  getQueue: procedure.query(async () => {
+    return await db
+      .select()
+      .from(queue)
+      .orderBy(desc(queue.priority), desc(queue.t));
+  }),
+
+  addToQueue: procedure
+    .input(z.object({ patientId: z.number(), priority: z.number() }))
+    .mutation(async ({ input: { patientId, priority } }) => {
+      await db.insert(queue).values({
+        patientId,
+        priority,
+        t: new Date(),
+      });
+    }),
+
+  removeFromQueue: procedure
+    .input(z.object({ patientId: z.number() }))
+    .mutation(async ({ input: { patientId } }) => {
+      await db.delete(queue).where(eq(queue.patientId, patientId));
+    }),
+
   createPatient: procedure
     .input(z.object({ name: z.string(), rut: z.string() }))
     .mutation(async () => {}),
@@ -88,6 +112,16 @@ export const appRouter = router({
         patientId,
         t: new Date(),
       });
+    }),
+
+  getExams: procedure
+    .input(z.object({ patientId: z.number() }))
+    .query(async ({ input: { patientId } }) => {
+      return await db
+        .select()
+        .from(exams)
+        .where(eq(exams.patientId, patientId))
+        .orderBy(desc(exams.t));
     }),
 
   getSnapshot: procedure
@@ -174,6 +208,8 @@ export const appRouter = router({
 
       return {
         graphId: insertedGraph.id,
+        symptoms,
+        graph,
       };
     }),
 });

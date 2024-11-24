@@ -1,6 +1,6 @@
 import { z } from "zod";
 import OpenAI, { toFile } from "openai";
-import { createAsyncCaller } from "@/trpc/routers/app";
+// import { createAsyncCaller } from "@/trpc/routers/app";
 
 const openai = new OpenAI();
 
@@ -11,7 +11,7 @@ const formDataSchema = z.object({
 export const maxDuration = 60;
 
 export const POST = async (request: Request) => {
-  const trpc = await createAsyncCaller();
+  // const trpc = await createAsyncCaller();
 
   const formData = await request.formData();
 
@@ -44,14 +44,14 @@ export const POST = async (request: Request) => {
     response_format: "verbose_json",
   });
 
-  await trpc.buildGraph({
-    id: result.data.id,
-    snapshot: {
-      t: new Date(),
-      descriptions: [text],
-      exams: [],
-    },
-  });
+  // await trpc.buildGraph({
+  //   id: result.data.id,
+  //   snapshot: {
+  //     t: new Date(),
+  //     descriptions: [text],
+  //     exams: [],
+  //   },
+  // });
 
   return new Response(JSON.stringify(text), {
     status: 200,
