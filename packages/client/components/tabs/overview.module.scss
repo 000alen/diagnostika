@@ -1,9 +1,12 @@
 //
 .container {
-  height: calc(100dvh - 2rem);
-  max-height: calc(100dvh - 2rem);
+
+  // height: calc(100dvh - 2rem);
+  // max-height: calc(100dvh - 2rem);
   margin: 1rem 0;
   display: flex;
+
+  background-color: #e0e0e0;
 }
 
 .leftPanel {
@@ -19,10 +22,12 @@
 }
 
 .graphs {
-  flex: 1;
+  // flex: 1;
+  height: 100vh;
   margin-top: .6rem;
+  margin-bottom: .6rem;
   background-color: white;
-  border-radius: 40px;
+  // border-radius: 40px;
   min-height: 0;
   border: 1px solid #e0e0e0;
 }

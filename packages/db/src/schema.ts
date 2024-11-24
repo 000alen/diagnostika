@@ -1,3 +1,4 @@
+import { uuid } from "drizzle-orm/pg-core";
 import {
   pgTable,
   text,
@@ -187,7 +188,7 @@ export const patients = pgTable("patients", {
 });
 
 export const graphs = pgTable("graphs", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   snapshotId: integer("snapshot_id")
     .references(() => snapshots.id, { onDelete: "cascade" })
     .notNull(),

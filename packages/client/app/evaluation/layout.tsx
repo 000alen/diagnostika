@@ -10,18 +10,20 @@ import {
 } from "@nextui-org/react";
 import { Button } from "@nextui-org/button";
 import { Badge } from "@nextui-org/badge";
-import { Bell } from "lucide-react";
+import { ArrowUpRight, Bell } from "lucide-react";
 
 import avatar from "@/assets/avatar.png";
 import layout from "./[evaluationId]/page.module.scss";
-
 
 export default function Layout({ children }: { children: any }) {
   return (
     <main className={layout.main}>
       <header>
         <div>
-          <h1>ProHealth</h1>
+          <Button>
+            Mis pacientes
+            <ArrowUpRight />
+          </Button>
         </div>
         <div>
           {/* <Button

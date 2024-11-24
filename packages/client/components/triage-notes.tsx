@@ -91,6 +91,13 @@ export default function TriageNotes() {
                 </>
               )}
             </Button>
+            <Button
+              variant={"default"}
+              className="w-32"
+              disabled={isTranscribing}
+            >
+              Guardar
+            </Button>
           </div>
         </div>
       </CardHeader>

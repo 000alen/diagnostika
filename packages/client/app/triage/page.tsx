@@ -26,9 +26,7 @@ export default function TriageBoard() {
           <h1 className="mb-6 text-4xl font-bold">Panel de Triaje</h1>
           <div className="flex gap-8 justify-center h-[calc(100vh-8rem)]">
             <TriageRegistration />
-
             <TriageNotes />
-
             <TriageQueue />
           </div>
         </div>
