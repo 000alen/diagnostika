@@ -171,6 +171,7 @@ export const appRouter = router({
 
       await db.insert(snapshotDescriptions).values({
         snapshotId: snapshot.id,
+        patientId,
         description,
       });
     }),
