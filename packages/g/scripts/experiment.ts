@@ -65,10 +65,13 @@ async function main() {
   if (diagnosis)
     await db
       .update(graphs)
-      .set({ diagnosis })
+      .set({ diagnosis: diagnosis.candidate })
       .where(eq(graphs.id, insertedGraph.id));
 
-  logger.info("Diagnosis", { diagnosis: diagnosis?.name });
+  logger.info("Diagnosis", {
+    diagnosis: diagnosis?.candidate?.name,
+    similarity: diagnosis?.similarity,
+  });
 }
 
 main().catch((error) => {

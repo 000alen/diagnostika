@@ -526,11 +526,6 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
       snapshot.exams
     );
 
-    // const symptoms = [
-    //   ...describedSymptoms,
-    //   ...detectedSymptoms.map((x) => x.symptom),
-    // ];
-
     symptoms.push(
       ...describedSymptoms,
       ...detectedSymptoms.map((x) => x.symptom)
@@ -586,8 +581,16 @@ export function match(
       candidate.reduce((acc, { similarity }) => acc + similarity, 0) /
       candidate.length;
 
+    // const productSimilarity = candidate.reduce(
+    //   (acc, { similarity }) => acc * similarity,
+    //   1
+    // );
+
     if (meanSimilarity >= threshold)
-      return candidate.map(({ symptom }) => symptom);
+      return {
+        candidate: candidate.map(({ symptom }) => symptom),
+        similarity: meanSimilarity,
+      };
   }
 }
 
@@ -616,7 +619,11 @@ export async function diagnose(
       threshold
     );
 
-    if (result) return candidateDisease;
+    if (result)
+      return {
+        candidate: candidateDisease,
+        similarity: result.similarity,
+      };
   }
 }
 
