@@ -94,7 +94,7 @@ export default function Page({
         id: edge.id,
         source: edge.source,
         target: edge.target,
-        type: "custom",
+        type: edge.type === "Evaluation" ? "criteria" : "custom",
         animated: true,
       };
     });

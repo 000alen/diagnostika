@@ -13,14 +13,22 @@ import ReactFlow, {
 import dagre from "dagre";
 import "reactflow/dist/style.css";
 
-import { SymptomNode, ExamNode, DiagnosisNode, ExaminableNode } from "./CustomNodes";
-import CustomEdge from "./CustomEdge";
+import {
+  SymptomNode,
+  ExamNode,
+  DiagnosisNode,
+  ExaminableNode,
+} from "./CustomNodes";
+import { CriteriaEdge, CustomEdge } from "./CustomEdge";
 
 const nodeWidth = 256;
 
 const nodeHeight = 200;
 
-const edgeTypes = { custom: CustomEdge };
+const edgeTypes = {
+  custom: CustomEdge,
+  criteria: CriteriaEdge,
+};
 
 const nodeTypes = {
   symptom: SymptomNode,

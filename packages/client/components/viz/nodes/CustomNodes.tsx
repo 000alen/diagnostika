@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Handle, Position } from "reactflow";
-import { Progress } from "@client/components/ui/progress";
 import { Badge } from "@client/components/ui/badge";
 import {
   Popover,
@@ -17,13 +16,13 @@ export function SymptomNode({ data }: { data: any }) {
         <div className="w-64 px-4 py-2 border rounded-md shadow-md cursor-pointer bg-amber-50 border-amber-200">
           <div className="font-bold text-amber-700">Symptom</div>
           <div className="font-semibold text-amber-900">{data.label}</div>
-          <div className="mt-2">
+          {/* <div className="mt-2">
             <div className="text-sm text-amber-700">Confidence Level</div>
             <Progress value={data.confidence} className="w-full bg-amber-200" />
             <div className="text-sm text-right text-amber-700">
               {data.confidence}%
             </div>
-          </div>
+          </div> */}
           <div className="flex flex-wrap gap-1 mt-2">
             {data.tags.map((tag: any, index: number) => (
               <Badge
@@ -62,7 +61,7 @@ export function ExamNode({ data }: { data: any }) {
         <div className="w-64 px-4 py-2 border rounded-md shadow-md cursor-pointer bg-sky-50 border-sky-200">
           <div className="font-bold text-sky-700">Exam</div>
           <div className="font-semibold text-sky-900">{data.label}</div>
-          <div className="mt-2 text-sm text-sky-700">{data.description}</div>
+          {/* <div className="mt-2 text-sm text-sky-700">{data.description}</div> */}
           <Handle
             type="target"
             position={Position.Top}
@@ -125,11 +124,11 @@ export function DiagnosisNode({ data }: { data: any }) {
               : ""
           }`}
         >
-          <div className="font-bold text-emerald-700">
-            Diagnosis {data.rank}
-          </div>
+          <div className="font-bold text-emerald-700">Diagnosis</div>
           <div className="font-semibold text-emerald-900">{data.label}</div>
-          <div className="mt-2">
+          <div className="mt-2 text-sm text-emerald-700">{data.description}</div>
+
+          {/* <div className="mt-2">
             <div className="text-sm text-emerald-700">Probability</div>
             <Progress
               value={data.probability}
@@ -138,7 +137,7 @@ export function DiagnosisNode({ data }: { data: any }) {
             <div className="text-sm text-right text-emerald-700">
               {data.probability}%
             </div>
-          </div>
+          </div> */}
           <div className="flex justify-between mt-2">
             <Button
               variant="outline"
