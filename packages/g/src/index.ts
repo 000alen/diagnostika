@@ -122,7 +122,6 @@ export async function extractSymptomsFromDescriptions(
 
 export async function extractExaminablesFromExam(
   models: Models,
-  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
   logger.debug("Extracting examinables from exam", { exam });
@@ -207,7 +206,6 @@ export async function getRelatedSymptomsFromExaminable(
 
 export async function getCandidateSymptomsFromExam(
   models: Models,
-  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<
   Array<{
@@ -215,7 +213,7 @@ export async function getCandidateSymptomsFromExam(
     examinable: ExaminableWithEmbedding;
   }>
 > {
-  const examinables = await extractExaminablesFromExam(models, graph, exam);
+  const examinables = await extractExaminablesFromExam(models, exam);
 
   const nSymptoms = await Promise.all(
     examinables.map(getRelatedSymptomsFromExaminable)
@@ -341,10 +339,10 @@ export async function evaluateSymptomExaminableCriterion(
 
 export async function extractSymptomsFromExam(
   models: Models,
-  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<
   Array<{
+    examinable: ExaminableWithEmbedding;
     symptom: SymptomWithEmbedding;
     evaluation: EvaluationWithEmbedding;
   }>
@@ -355,7 +353,6 @@ export async function extractSymptomsFromExam(
 
   const symptomsAndExaminable = await getCandidateSymptomsFromExam(
     models,
-    graph,
     exam
   );
   logger.debug("Found candidate symptoms and examinables", {
@@ -404,7 +401,8 @@ export async function extractSymptomsFromExam(
     positiveEvaluations: evaluations.filter((e) => e.positive).length,
   });
 
-  return triplets.map(({ symptom }, i) => ({
+  return triplets.map(({ symptom, examinable }, i) => ({
+    examinable,
     symptom,
     evaluation: evaluations[i],
   }));
@@ -431,15 +429,16 @@ export async function extractSymptomsFromExams(
   );
 
   const nSymptomsAndEvaluations = await Promise.all(
-    exams.map((exam) => extractSymptomsFromExam(models, graph, exam))
+    exams.map((exam) => extractSymptomsFromExam(models, exam))
   );
 
   const triplets = flatten(
     nSymptomsAndEvaluations.map((nSymptomAndEvaluation, i) =>
       nSymptomAndEvaluation
         .filter(({ evaluation }) => evaluation.positive)
-        .map(({ symptom, evaluation }) => ({
+        .map(({ examinable, symptom, evaluation }) => ({
           exam: exams[i],
+          examinable,
           symptom,
           evaluation,
         }))
@@ -447,13 +446,31 @@ export async function extractSymptomsFromExams(
   );
 
   for (let i = 0; i < triplets.length; i++) {
-    const { exam, symptom, evaluation } = triplets[i];
+    const { exam, examinable, symptom, evaluation } = triplets[i];
 
     graph.addNode({
       id: exam.name,
       type: "Exam",
       embedding: examEmbeddings[i],
       exam,
+    });
+
+    graph.addNode({
+      id: examinable.name,
+      type: "Examinable",
+      embedding: examinable.embedding,
+      examinable,
+    });
+
+    graph.addEdge({
+      id: `${exam.name}-${examinable.name}`,
+      type: "Related",
+      source: exam.name,
+      sourceEmbedding: examEmbeddings[i],
+      target: examinable.name,
+      targetEmbedding: examinable.embedding,
+      weight: 1,
+      embedding: examinable.embedding,
     });
 
     graph.addNode({
@@ -464,15 +481,12 @@ export async function extractSymptomsFromExams(
     });
 
     graph.addEdge({
-      id: `${exam.name}-${symptom.name}`,
+      id: `${examinable.name}-${symptom.name}`,
       type: "Evaluation",
-
-      source: exam.name,
-      sourceEmbedding: examEmbeddings[i],
-
+      source: examinable.name,
+      sourceEmbedding: examinable.embedding,
       target: symptom.name,
       targetEmbedding: symptom.embedding,
-
       embedding: evaluation.embedding,
       evaluation,
     });

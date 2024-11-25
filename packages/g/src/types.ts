@@ -90,7 +90,7 @@ export const EvaluationWithEmbedding = Evaluation.merge(Embeddable);
 
 export type EvaluationWithEmbedding = z.infer<typeof EvaluationWithEmbedding>;
 
-export const NodeType = z.enum(["Symptom", "Exam"]);
+export const NodeType = z.enum(["Symptom", "Exam", "Examinable"]);
 
 export type NodeType = z.infer<typeof NodeType>;
 
@@ -118,7 +118,20 @@ export const ExamNode = BaseNode.extend({
   exam: Exam.describe("The exam"),
 });
 
-export const Node = z.discriminatedUnion("type", [SymptomNode, ExamNode]);
+export type ExamNode = z.infer<typeof ExamNode>;
+
+export const ExaminableNode = BaseNode.extend({
+  type: z.literal("Examinable"),
+  examinable: ExaminableWithEmbedding.describe("The examinable"),
+});
+
+export type ExaminableNode = z.infer<typeof ExaminableNode>;
+
+export const Node = z.discriminatedUnion("type", [
+  SymptomNode,
+  ExamNode,
+  ExaminableNode,
+]);
 
 export type Node = z.infer<typeof Node>;
 
