@@ -6,11 +6,13 @@ import { z } from "zod";
 import {
   Criteria,
   CriteriaWithEmbedding,
+  Edge,
   Evaluation,
   EvaluationWithEmbedding,
   Exam,
   Examinable,
   ExaminableWithEmbedding,
+  Node,
   Snapshot,
   Symptom,
   SymptomWithEmbedding,
@@ -98,7 +100,7 @@ export async function extractSymptomsFromDescription(
 
 export async function extractSymptomsFromDescriptions(
   models: Models,
-  graph: Graph,
+  graph: Graph<Node, Edge>,
   descriptions: string[]
 ) {
   const nSymptoms = await Promise.all(
@@ -120,7 +122,7 @@ export async function extractSymptomsFromDescriptions(
 
 export async function extractExaminablesFromExam(
   models: Models,
-  graph: Graph,
+  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<Array<ExaminableWithEmbedding>> {
   logger.debug("Extracting examinables from exam", { exam });
@@ -205,7 +207,7 @@ export async function getRelatedSymptomsFromExaminable(
 
 export async function getCandidateSymptomsFromExam(
   models: Models,
-  graph: Graph,
+  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<
   Array<{
@@ -339,7 +341,7 @@ export async function evaluateSymptomExaminableCriterion(
 
 export async function extractSymptomsFromExam(
   models: Models,
-  graph: Graph,
+  graph: Graph<Node, Edge>,
   exam: Exam
 ): Promise<
   Array<{
@@ -410,7 +412,7 @@ export async function extractSymptomsFromExam(
 
 export async function extractSymptomsFromExams(
   models: Models,
-  graph: Graph,
+  graph: Graph<Node, Edge>,
   exams: Array<Exam>
 ): Promise<
   Array<{
@@ -486,7 +488,7 @@ export async function buildGraph(models: Models, snapshots: Array<Snapshot>) {
 
   snapshots = snapshots.sort((a, b) => a.t.getTime() - b.t.getTime());
 
-  const graph = new Graph();
+  const graph = new Graph<Node, Edge>();
   const symptoms = [];
   const exams = [];
 

@@ -1,9 +1,9 @@
 import { cosineSimilarity } from "ai";
-import { Edge, Node } from "./types";
+import { BaseEdge, BaseNode } from "./types";
 
 const IDENTITY_THRESHOLD = 0.8;
 
-export class Graph {
+export class Graph<Node extends BaseNode, Edge extends BaseEdge> {
   nodes: Array<Node>;
   edges: Array<Edge>;
 
