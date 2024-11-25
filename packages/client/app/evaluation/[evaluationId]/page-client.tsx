@@ -23,7 +23,12 @@ interface PageProps {
   patientName: string;
 }
 
-export default function Page({ patientName, graph, diagnosis, symptoms }: PageProps) {
+export default function Page({
+  patientName,
+  graph,
+  diagnosis,
+  symptoms,
+}: PageProps) {
   const nodes = useMemo<Node[]>(() => {
     const _nodes = graph.nodes.map((node) => {
       switch (node.type) {
@@ -37,6 +42,16 @@ export default function Page({ patientName, graph, diagnosis, symptoms }: PagePr
               // tags: node.symptom.tags,
               tags: [],
               justification: node.symptom.description,
+            },
+            position: { x: 0, y: 0 },
+          };
+        case "Examinable":
+          return {
+            id: node.id,
+            type: "examinable",
+            data: {
+              label: node.examinable.name,
+              description: node.examinable.description,
             },
             position: { x: 0, y: 0 },
           };
@@ -122,7 +137,11 @@ export default function Page({ patientName, graph, diagnosis, symptoms }: PagePr
           <NodesComponent initialNodes={nodes} initialEdges={edges} />
         </div>
 
-        <BentoGridSide patientName={patientName} diagnosis={diagnosis} symptoms={symptoms as any} />
+        <BentoGridSide
+          patientName={patientName}
+          diagnosis={diagnosis}
+          symptoms={symptoms as any}
+        />
       </div>
     </div>
   );

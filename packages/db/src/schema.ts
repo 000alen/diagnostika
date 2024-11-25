@@ -144,6 +144,9 @@ export const snapshots = pgTable("snapshots", {
 
 export const snapshotDescriptions = pgTable("snapshot_descriptions", {
   id: serial("id").primaryKey(),
+  patientId: integer("patient_id")
+    .references(() => patients.id)
+    .notNull(),
   snapshotId: integer("snapshot_id")
     .references(() => snapshots.id, { onDelete: "cascade" })
     .notNull(),

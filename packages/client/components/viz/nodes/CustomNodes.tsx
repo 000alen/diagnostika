@@ -87,6 +87,33 @@ export function ExamNode({ data }: { data: any }) {
   );
 }
 
+export function ExaminableNode({ data }: { data: any }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <div className="w-64 px-4 py-2 border rounded-md shadow-md cursor-pointer bg-sky-100 border-sky-400">
+          <div className="font-bold text-sky-700">Examinable</div>
+          <div className="font-semibold text-sky-900">{data.label}</div>
+          <div className="mt-2 text-sm text-sky-700">{data.description}</div>
+          <Handle
+            type="target"
+            position={Position.Top}
+            className="w-16 !bg-sky-500"
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            className="w-16 !bg-sky-500"
+          />
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <h3 className="mb-2 font-semibold">{data.label} Details</h3>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function DiagnosisNode({ data }: { data: any }) {
   return (
     <Popover>
