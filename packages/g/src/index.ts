@@ -613,17 +613,28 @@ export async function diagnose(
       .where(eq(diseaseSymptoms.diseaseId, candidateDisease.id))
       .then((results) => results.map((r) => r.symptoms));
 
+    logger.debug("Trying to match symptoms", {
+      nSymptoms: reportedSymptoms.length,
+      nCandidate: querySymptoms.length,
+    });
+
     const result = match(
       reportedSymptoms,
       querySymptoms as Array<SymptomWithEmbedding>,
       threshold
     );
 
-    if (result)
+    if (result) {
+      logger.info("Diagnosis", {
+        candidate: candidateDisease.name,
+        similarity: result.similarity,
+      });
+
       return {
         candidate: candidateDisease,
         similarity: result.similarity,
       };
+    }
   }
 }
 

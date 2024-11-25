@@ -15,10 +15,14 @@ const models: Models = {
   embedding: titanEmbeddings,
 };
 
+const PATIENT_ID = 15;
+const SNAPSHOT_ID = 4;
+
 async function main() {
   const _descriptions = await db
     .select({ description: snapshotDescriptions.description })
-    .from(snapshotDescriptions);
+    .from(snapshotDescriptions)
+    .where(eq(snapshotDescriptions.patientId, PATIENT_ID));
 
   logger.info(`Found ${_descriptions.length} descriptions`);
 
@@ -28,6 +32,7 @@ async function main() {
       description: exams.description,
     })
     .from(exams)
+    .where(eq(exams.patientId, PATIENT_ID))
     .innerJoin(snapshotExams, eq(exams.id, snapshotExams.examId));
 
   logger.info(`Found ${_exams.length} exams`);
@@ -51,7 +56,7 @@ async function main() {
   const insertedGraph = await db
     .insert(graphs)
     .values({
-      snapshotId: 4,
+      snapshotId: SNAPSHOT_ID,
       symptoms,
       graph,
     })
