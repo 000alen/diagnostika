@@ -261,6 +261,23 @@ export const appRouter = router({
 
       return diagnosis;
     }),
+
+  getQuestion: procedure
+    .input(
+      z.object({
+        patientId: z.number(),
+        graphId: z.string(),
+      })
+    )
+    .query(async ({ input: { graphId } }) => {
+      const graph = await db
+        .select()
+        .from(graphs)
+        .where(eq(graphs.id, graphId))
+        .then((rows) => rows[0]);
+
+      return null;
+    }),
 });
 
 export const createCaller = createCallerFactory(appRouter);
