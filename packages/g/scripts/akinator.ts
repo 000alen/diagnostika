@@ -1,3 +1,11 @@
+import {
+  db,
+  diseases as diseasesTable,
+  symptoms as symptomsTable,
+  diseaseSymptoms as diseaseSymptomsTable,
+  eq,
+} from "@bananus/db";
+
 interface Symptom {
   id: number;
   name: string;
@@ -204,16 +212,76 @@ const covid: Disease = {
   ],
 };
 
-function main() {
+import * as readline from "readline";
+
+/**
+ * Python-like input function in TypeScript
+ * @param prompt A string to display as the prompt for user input
+ * @returns A Promise that resolves with the user's input as a string
+ */
+export function input(prompt: string): Promise<string> {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    rl.question(prompt, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
+}
+
+async function main() {
   const maxQuestions = 6;
 
-  const diseases = [flu, allergy, covid];
-  const diagnostic = new Diagnostic(diseases);
+  const data = await db
+    .select({
+      disease: {
+        id: diseasesTable.id,
+        name: diseasesTable.name,
+        description: diseasesTable.description,
+      },
+      symptom: {
+        id: symptomsTable.id,
+        name: symptomsTable.name,
+        description: symptomsTable.description,
+      },
+    })
+    .from(diseasesTable)
+    .leftJoin(
+      diseaseSymptomsTable,
+      eq(diseasesTable.id, diseaseSymptomsTable.diseaseId)
+    )
+    .leftJoin(
+      symptomsTable,
+      eq(diseaseSymptomsTable.symptomId, symptomsTable.id)
+    );
+
+  const _seenDiseases: Map<number, number> = new Map();
+  const _diseases: Disease[] = [];
+  data.forEach(({ disease, symptom }) => {
+    if (_seenDiseases.has(disease.id)) {
+      const index = _seenDiseases.get(disease.id)!;
+      _diseases[index].symptoms.push(symptom!);
+      return;
+    }
+    _seenDiseases.set(disease.id, _diseases.length);
+    _diseases.push({
+      ...disease,
+      prevalence: 0.1,
+      symptoms: [symptom!],
+    });
+  });
+
+  // const diseases = [flu, allergy, covid];
+  const diagnostic = new Diagnostic(_diseases);
 
   const knownSymptoms = new Set<number>();
 
   // Initial symptoms (e.g., fever and cough)
-  const initialSymptoms = [1, 2];
+  const initialSymptoms = [];
   for (const symptomId of initialSymptoms) {
     knownSymptoms.add(symptomId);
     diagnostic.updateProbabilities(
@@ -229,16 +297,13 @@ function main() {
     if (!candidateSymptom) break; // No more symptoms to ask about
 
     // Simulate patient's response
-    const answer = Math.random() > 0.5;
+    // const answer = Math.random() > 0.5;
+    const answer =
+      (await input(`\nQuestion: Do you have ${candidateSymptom.name}? `)) ===
+      "yes";
 
     knownSymptoms.add(candidateSymptom.id);
     diagnostic.updateProbabilities(candidateSymptom, answer);
-
-    console.log(
-      `\nQuestion: Do you have ${candidateSymptom.name}? Answer: ${
-        answer ? "Yes" : "No"
-      }`
-    );
 
     diagnostic.showProbabilities();
   }
